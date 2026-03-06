@@ -1,0 +1,136 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+import { ArrowLeft } from 'lucide-astro';
+
+interface Props {
+  frontmatter: {
+    title: string;
+    date: Date;
+    tags: string[];
+    excerpt: string;
+    heroImage?: string;
+    draft?: boolean;
+  };
+}
+
+const { frontmatter } = Astro.props;
+const base = '/';
+---
+
+<BaseLayout title={`${frontmatter.title} | Kybernetria`}>
+  <Navbar />
+
+  <main class="w-full pt-32 pb-24 px-6 md:px-12 relative z-10">
+    <article class="max-w-[68ch] mx-auto w-full">
+      <!-- Back Link Top -->
+      <a href={`${base}blog/`} class="inline-flex items-center gap-2 font-mono text-ash text-sm mb-12 hover:text-signal transition-colors">
+        <ArrowLeft size={16} /> Back to Transmissions
+      </a>
+
+      <!-- Header -->
+      <header class="mb-16">
+        <div class="flex flex-wrap items-center gap-3 mb-6">
+          <time class="font-mono text-ash text-sm">{new Date(frontmatter.date).toISOString().split('T')[0]}</time>
+          <span class="text-wire hidden md:inline">•</span>
+          <div class="flex gap-2">
+            {frontmatter.tags && frontmatter.tags.map((tag: string) => (
+              <span class="font-mono text-[0.7rem] uppercase px-2 py-0.5 border border-wire rounded-full text-ash">
+                {tag}
+              </span>
+            ))}
+          </div>
+        </div>
+        <h1 class="font-headline text-5xl md:text-7xl leading-[0.95] text-chalk drop-shadow-sm mb-8" style="font-size: clamp(3rem, 8vw, 6rem);">
+          {frontmatter.title}
+        </h1>
+        {frontmatter.heroImage && (
+          <div class="w-full aspect-video rounded-xl overflow-hidden mb-8 border border-wire">
+            <img src={frontmatter.heroImage} alt="Hero" class="w-full h-full object-cover grayscale mix-blend-luminosity opacity-90" />
+          </div>
+        )}
+      </header>
+
+      <!-- Content (Prose) -->
+      <div class="editorial-prose font-body text-ash lg:text-lg leading-relaxed space-y-8">
+        <slot />
+      </div>
+
+      <!-- Back Link Bottom -->
+      <div class="mt-20 pt-8 border-t border-wire flex justify-between items-center">
+        <a href={`${base}blog/`} class="inline-flex items-center gap-2 font-mono text-ash text-sm hover:text-signal transition-colors group">
+          <span class="transform group-hover:-translate-x-1 transition-transform">←</span> Return to Archive
+        </a>
+      </div>
+    </article>
+  </main>
+
+  <Footer />
+</BaseLayout>
+
+<style is:global>
+  /* Editorial Prose Scoped Styling */
+  .editorial-prose p {
+    margin-bottom: 2rem;
+  }
+  
+  /* Drop Cap */
+  .editorial-prose > p:first-of-type::first-letter {
+    float: left;
+    font-size: 4rem;
+    line-height: 0.8;
+    padding-top: 0.1rem;
+    padding-right: 0.5rem;
+    padding-bottom: 0px;
+    font-family: 'Bebas Neue', sans-serif;
+    color: var(--color-signal);
+  }
+
+  /* Typography Safety */
+  .editorial-prose h2, .editorial-prose h3, .editorial-prose h4 {
+    font-family: 'Epilogue', sans-serif;
+    color: var(--color-chalk);
+    margin-top: 3rem;
+    margin-bottom: 1.5rem;
+    line-height: 1.2;
+    overflow-wrap: break-word;
+    min-width: 0;
+  }
+
+  .editorial-prose h2 { font-size: 2.5rem; text-transform: uppercase; }
+  .editorial-prose h3 { font-size: 2rem; }
+  
+  /* Inline Code */
+  .editorial-prose code:not(pre code) {
+    font-family: 'JetBrains Mono', monospace;
+    background-color: var(--color-plate);
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    font-size: 0.9em;
+    color: var(--color-chalk);
+  }
+
+  /* Blockquote */
+  .editorial-prose blockquote {
+    border-left: 4px solid var(--color-signal);
+    padding-left: 1.5rem;
+    margin-left: 1rem;
+    font-style: italic;
+    color: var(--color-chalk);
+    font-size: 1.1em;
+  }
+  
+  .editorial-prose a {
+    color: var(--color-signal);
+    text-decoration: underline;
+    text-decoration-color: var(--color-wire);
+    text-underline-offset: 4px;
+    transition: all 0.2s;
+  }
+  
+  .editorial-prose a:hover {
+    text-decoration-color: var(--color-signal);
+    color: var(--color-copper);
+  }
+</style>

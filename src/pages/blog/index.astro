@@ -1,0 +1,25 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Navbar from '../../components/Navbar.astro';
+import BlogRoll from '../../components/BlogRoll.astro';
+import Footer from '../../components/Footer.astro';
+---
+
+<BaseLayout title="Archive | Kybernetria">
+  <Navbar />
+  
+  <main class="pt-32 min-h-[80vh]">
+    <div class="max-w-7xl mx-auto px-6 md:px-12 mb-12">
+      <h1 class="font-headline text-5xl md:text-7xl text-chalk leading-[0.9] tracking-wide mb-4">
+        THE ARCHIVE
+      </h1>
+      <p class="font-body text-ash text-lg max-w-2xl">
+        A chronological repository of transmissions, field notes, and theoretical interventions.
+      </p>
+    </div>
+
+    <BlogRoll showHeading={false} />
+  </main>
+
+  <Footer />
+</BaseLayout>

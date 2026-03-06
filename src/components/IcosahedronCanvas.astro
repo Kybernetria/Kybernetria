@@ -1,0 +1,124 @@
+---
+// IcosahedronCanvas.astro
+---
+
+<div id="icosahedron-container" class="w-full h-full absolute inset-0 z-0 pointer-events-none flex items-start md:items-center justify-center" style="transform: translateZ(1px);">
+  <canvas id="icosahedron-canvas" class="w-full h-full block"></canvas>
+</div>
+
+<script>
+  import * as THREE from 'three';
+  import gsap from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  let scene;
+  let camera;
+  let renderer;
+  let icosahedron;
+  let group;
+  let animationId;
+
+  function init() {
+    const container = document.getElementById('icosahedron-container');
+    const canvas = document.getElementById('icosahedron-canvas');
+
+    if (!(container instanceof HTMLDivElement) || !(canvas instanceof HTMLCanvasElement)) return;
+
+    scene = new THREE.Scene();
+
+    camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100);
+    camera.position.z = 8;
+
+    renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+    renderer.setSize(container.clientWidth, container.clientHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    // Scale: smaller to prevent clipping
+    const isMobile = window.innerWidth < 768;
+    const radius = isMobile ? 1.4 : 2.0;
+    const geometry = new THREE.IcosahedronGeometry(radius, 0);
+    const edges = new THREE.EdgesGeometry(geometry);
+    const material = new THREE.LineBasicMaterial({
+      color: 0x7EC8C8,
+      transparent: true,
+      opacity: 0.6
+    });
+
+    icosahedron = new THREE.LineSegments(edges, material);
+    group = new THREE.Group();
+    group.add(icosahedron);
+    scene.add(group);
+
+    let mouseX = 0;
+    let mouseY = 0;
+    const windowHalfX = window.innerWidth / 2;
+    const windowHalfY = window.innerHeight / 2;
+
+    const onMouseMove = (event) => {
+      mouseX = (event.clientX - windowHalfX);
+      mouseY = (event.clientY - windowHalfY);
+    };
+    document.addEventListener('mousemove', onMouseMove);
+
+    const onResize = () => {
+      if (!container) return;
+      camera.aspect = container.clientWidth / container.clientHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(container.clientWidth, container.clientHeight);
+    };
+    window.addEventListener('resize', onResize);
+
+    const clock = new THREE.Clock();
+
+    const animate = () => {
+      animationId = requestAnimationFrame(animate);
+      const delta = clock.getDelta();
+
+      icosahedron.rotation.x += 0.072 * delta;
+      icosahedron.rotation.y += 0.108 * delta;
+      icosahedron.rotation.z += 0.036 * delta;
+
+      const targetX = mouseX * 0.0003;
+      const targetY = mouseY * 0.0003;
+
+      group.rotation.y += (targetX - group.rotation.y) * 0.05;
+      group.rotation.x += (targetY - group.rotation.x) * 0.05;
+
+      renderer.render(scene, camera);
+    };
+    animate();
+
+    // Fade to 30% opacity on scroll, never fully vanish
+    const scrollCtx = gsap.context(() => {
+      gsap.to(container, {
+        scrollTrigger: {
+          trigger: "body",
+          start: "top top",
+          end: () => `${window.innerHeight}px top`,
+          invalidateOnRefresh: true,
+          scrub: true,
+        },
+        scale: 0.7,
+        opacity: 0.3,
+        ease: "none"
+      });
+    });
+
+    // Cleanup on view transition
+    document.addEventListener("astro:before-swap", () => {
+      cancelAnimationFrame(animationId);
+      window.removeEventListener('resize', onResize);
+      document.removeEventListener('mousemove', onMouseMove);
+      scrollCtx.revert();
+      if(renderer) {
+        renderer.dispose();
+      }
+    }, { once: true });
+  }
+
+  // Initialize on page load and view transitions
+  init();
+  document.addEventListener("astro:page-load", init);
+</script>

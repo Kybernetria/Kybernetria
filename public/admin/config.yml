@@ -1,0 +1,45 @@
+# -------------------------------------------------------
+# SETUP REQUIRED: Replace YOURUSERNAME and repo path.
+# For GitHub: set up OAuth via Sveltia CMS Auth worker.
+# For Codeberg: change backend name to 'gitea' and
+#   set base_url to https://codeberg.org
+# See: https://decapcms.org/docs/backends-overview/
+# -------------------------------------------------------
+
+backend:
+  name: github                         # change to 'gitea' for Codeberg
+  repo: YOURUSERNAME/kybernetria       # replace with actual repo path
+  branch: main
+  base_url: https://sveltia-cms-auth.YOURWORKER.workers.dev
+
+media_folder: public/images/blog
+public_folder: /images/blog
+
+collections:
+  - name: blog
+    label: Blog Posts
+    folder: src/content/blog
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: Date, name: date, widget: datetime }
+      - { label: Tags, name: tags, widget: list, default: [] }
+      - { label: Excerpt, name: excerpt, widget: text }
+      - { label: Hero Image, name: heroImage, widget: image, required: false }
+      - { label: Draft, name: draft, widget: boolean, default: false }
+      - { label: Body, name: body, widget: markdown }
+
+  - name: tools
+    label: Tools
+    folder: src/content/tools
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: Name, name: name, widget: string }
+      - { label: Description, name: description, widget: text }
+      - { label: GitHub URL, name: github, widget: string }
+      - { label: Tags, name: tags, widget: list, default: [] }
+      - { label: Status, name: status, widget: select, options: ["active", "stable", "experimental"], default: "active" }
+      - { label: Order, name: order, widget: number, default: 0 }
+      - { label: Body, name: body, widget: markdown, required: false }

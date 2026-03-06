@@ -1,0 +1,81 @@
+---
+// StatusBar.astro
+---
+
+<aside id="status-bar" class="fixed bottom-0 left-0 right-0 z-50 bg-[var(--color-carbon)]/90 backdrop-blur-md border-t border-[var(--color-wire)]">
+  <div class="max-w-6xl mx-auto px-6 py-2 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <span class="status-dot w-2 h-2 rounded-full bg-[var(--color-signal)]"></span>
+      <span id="current-section" class="font-mono text-xs text-[var(--color-ash)]">HOME</span>
+    </div>
+    
+    <div class="flex items-center gap-4">
+      <div class="hidden md:block w-32 h-1 bg-[var(--color-plate)] rounded-full overflow-hidden">
+        <div id="scroll-progress" class="h-full bg-[var(--color-signal)] transition-all duration-100" style="width: 0%"></div>
+      </div>
+      <span id="scroll-percent" class="font-mono text-xs text-[var(--color-ash)]">0%</span>
+    </div>
+  </div>
+</aside>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  
+  gsap.registerPlugin(ScrollTrigger);
+  
+  const sections = ['HOME', 'MANIFESTO', 'LENSES', 'TRANSMISSIONS', 'FOOTER'];
+  const sectionElements: { [key: string]: HTMLElement | null } = {
+    'HOME': document.getElementById('hero-section'),
+    'MANIFESTO': document.getElementById('manifesto-section'),
+    'LENSES': document.getElementById('features-section'),
+    'TRANSMISSIONS': document.getElementById('transmissions-section'),
+    'FOOTER': document.getElementById('footer-section'),
+  };
+  
+  const currentSectionEl = document.getElementById('current-section');
+  const scrollProgressEl = document.getElementById('scroll-progress');
+  const scrollPercentEl = document.getElementById('scroll-percent');
+  
+  function initStatusBar() {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const sectionId = entry.target.id;
+            const sectionName = Object.keys(sectionElements).find(
+              key => sectionElements[key]?.id === sectionId
+            );
+            if (sectionName && currentSectionEl) {
+              currentSectionEl.textContent = sectionName;
+            }
+          }
+        });
+      },
+      { threshold: 0.5 }
+    );
+    
+    Object.values(sectionElements).forEach((el) => {
+      if (el) observer.observe(el);
+    });
+    
+    ScrollTrigger.create({
+      trigger: 'body',
+      start: 'top top',
+      end: 'bottom bottom',
+      onUpdate: (self) => {
+        const progress = Math.round(self.progress * 100);
+        if (scrollProgressEl) {
+          scrollProgressEl.style.width = `${progress}%`;
+        }
+        if (scrollPercentEl) {
+          scrollPercentEl.textContent = `${progress}%`;
+        }
+      }
+    });
+  }
+  
+  initStatusBar();
+  
+  document.addEventListener('astro:page-load', initStatusBar);
+</script>

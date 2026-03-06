@@ -1,0 +1,90 @@
+---
+interface Props {
+  code: string;
+  title: string;
+}
+
+const { code, title } = Astro.props;
+---
+
+<section class="section-divider py-3 px-6 relative overflow-hidden" data-section={code}>
+  <div class="max-w-7xl mx-auto flex items-center justify-between">
+    <span class="font-mono text-xs text-ash tracking-widest">
+      {code}
+    </span>
+    <span class="font-subhead font-medium text-sm text-ash uppercase tracking-wide">
+      {title}
+    </span>
+  </div>
+  <div class="sweep-line"></div>
+</section>
+
+<style>
+  .section-divider {
+    background: linear-gradient(90deg, var(--color-forge) 0%, var(--color-carbon) 50%, var(--color-forge) 100%);
+    border-top: 1px solid var(--color-wire);
+    border-bottom: 1px solid var(--color-wire);
+  }
+
+  .sweep-line {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--color-signal), transparent);
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+</style>
+
+<script>
+  import gsap from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  function initDividers() {
+    const dividers = document.querySelectorAll('.section-divider');
+    
+    dividers.forEach(divider => {
+      const sweep = divider.querySelector('.sweep-line') as HTMLElement;
+      
+      if (sweep) {
+        let lastScrollY = window.scrollY;
+        
+        ScrollTrigger.create({
+          trigger: divider,
+          start: 'top 85%',
+          end: 'bottom 15%',
+          onUpdate: (self) => {
+            const scrollY = window.scrollY;
+            const direction = scrollY > lastScrollY ? 'down' : 'up';
+            lastScrollY = scrollY;
+            
+            const progress = self.progress;
+            
+            if (direction === 'down') {
+              gsap.to(sweep, {
+                scaleX: progress,
+                duration: 0.3,
+                ease: 'power2.out',
+                overwrite: 'auto'
+              });
+            } else {
+              gsap.to(sweep, {
+                scaleX: progress,
+                duration: 0.3,
+                ease: 'power2.out',
+                overwrite: 'auto'
+              });
+            }
+          }
+        });
+      }
+    });
+  }
+
+  initDividers();
+  document.addEventListener('astro:page-load', initDividers);
+</script>

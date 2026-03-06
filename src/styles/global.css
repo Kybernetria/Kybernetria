@@ -1,0 +1,96 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-carbon: #0f0f0f;
+    --color-forge: #1a1a1a;
+    --color-plate: #242424;
+    --color-chalk: #e8e4dc;
+    --color-ash: #8a8880;
+    --color-signal: #d93f2e;
+    --color-copper: #c47a3a;
+    --color-cyan: #7ec8c8;
+    --color-wire: #2e2e2e;
+
+    --font-headline: "Bebas Neue", sans-serif;
+    --font-subhead: "Epilogue", sans-serif;
+    --font-body: "Lora", serif;
+    --font-mono: "JetBrains Mono", monospace;
+  }
+
+  html {
+    background-color: var(--color-carbon);
+    color: var(--color-chalk);
+    scroll-behavior: smooth;
+  }
+
+  @media (min-width: 1024px) {
+    html {
+      font-size: 105%;
+    }
+  }
+
+  body {
+    position: relative;
+    min-height: 100vh;
+    font-family: var(--font-body);
+    overflow-x: hidden;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-headline);
+    font-weight: 900;
+    letter-spacing: 0.04em;
+    line-height: 1.1;
+    overflow-wrap: break-word;
+    min-width: 0;
+  }
+
+  code,
+  pre {
+    font-family: var(--font-mono);
+  }
+
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    pointer-events: none;
+    background-image: url("/kybernetria/noise.svg");
+    opacity: 0.03;
+  }
+
+  /* Typography Safety Rules */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    overflow-wrap: break-word;
+    min-width: 0;
+  }
+}
+
+/* Micro-Interaction System */
+@layer utilities {
+  .clip-reveal {
+    overflow: hidden;
+  }
+
+  .btn-hover {
+    transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .btn-hover:hover {
+    transform: scale(1.02);
+  }
+}
