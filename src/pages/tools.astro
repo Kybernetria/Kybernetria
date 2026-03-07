@@ -2,7 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Navbar from '../components/Navbar.astro';
 import Footer from '../components/Footer.astro';
-import { Github, ExternalLink, Wrench, Cpu, Network } from 'lucide-astro';
+import { Github, ExternalLink } from 'lucide-astro';
 import { getCollection } from 'astro:content';
 
 const base = '/';
@@ -21,13 +21,12 @@ const tools = toolsEntries
 
 <BaseLayout title="Tools | Kybernetria">
   <Navbar />
-  
+
   <main class="pt-32 min-h-[80vh]">
     <div class="max-w-7xl mx-auto px-6 md:px-12 mb-16">
-      <div class="flex items-center gap-4 mb-4">
-        <Wrench class="text-signal" size={32} />
+      <div class="mb-4">
         <h1 class="font-headline text-5xl md:text-7xl text-chalk leading-[0.9] tracking-wide">
-          TOOLKIT
+          TOOLS
         </h1>
       </div>
       <p class="font-body text-ash text-lg max-w-2xl leading-relaxed">
@@ -40,14 +39,9 @@ const tools = toolsEntries
         {tools.map((tool) => (
           <article class="group relative bg-plate/50 border border-wire rounded-lg p-6 hover:border-signal/50 transition-all duration-300 hover:bg-plate/80">
             <div class="flex items-start justify-between mb-4">
-              <div class="flex items-center gap-3">
-                <div class="p-2 bg-carbon rounded-lg border border-wire group-hover:border-signal/30 transition-colors">
-                  <Cpu class="text-signal" size={20} />
-                </div>
-                <h2 class="font-headline text-2xl text-chalk tracking-wide">
-                  {tool.name}
-                </h2>
-              </div>
+              <h2 class="font-headline text-2xl text-chalk tracking-wide">
+                {tool.name}
+              </h2>
               <span class={`font-mono text-xs uppercase px-2 py-1 rounded ${
                 tool.status === 'active' ? 'bg-cyan/20 text-cyan' :
                 tool.status === 'stable' ? 'bg-signal/20 text-signal' :
@@ -56,11 +50,11 @@ const tools = toolsEntries
                 {tool.status}
               </span>
             </div>
-            
+
             <p class="font-body text-ash text-sm leading-relaxed mb-6">
               {tool.description}
             </p>
-            
+
             <div class="flex flex-wrap gap-2 mb-6">
               {tool.tags.map((tag) => (
                 <span class="font-mono text-xs text-ash/70 bg-carbon/50 px-2 py-1 rounded border border-wire/50">
@@ -68,10 +62,10 @@ const tools = toolsEntries
                 </span>
               ))}
             </div>
-            
-            <a 
-              href={tool.github} 
-              target="_blank" 
+
+            <a
+              href={tool.github}
+              target="_blank"
               rel="noopener noreferrer"
               class="inline-flex items-center gap-2 font-subhead uppercase text-sm text-chalk hover:text-signal transition-colors group/link"
             >
@@ -84,8 +78,7 @@ const tools = toolsEntries
       </div>
 
       <div class="mt-16 mb-12 border-t border-wire pt-12">
-        <div class="flex items-center gap-4 mb-6">
-          <Network class="text-copper" size={24} />
+        <div class="mb-6">
           <h2 class="font-headline text-3xl text-chalk tracking-wide">
             CONTRIBUTE
           </h2>
@@ -93,9 +86,9 @@ const tools = toolsEntries
         <p class="font-body text-ash max-w-2xl leading-relaxed mb-6">
           All tools are released under open licenses. Contributions, forks, and derivative works are welcomed. Join the network of systems builders.
         </p>
-        <a 
-          href="https://github.com/kybernetria" 
-          target="_blank" 
+        <a
+          href="https://github.com/kybernetria"
+          target="_blank"
           rel="noopener noreferrer"
           class="inline-flex items-center gap-2 font-subhead uppercase text-sm text-signal border border-signal rounded-full px-6 py-2 hover:bg-signal hover:text-carbon transition-all duration-300 btn-hover"
         >

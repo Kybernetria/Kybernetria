@@ -2,8 +2,8 @@
 // IcosahedronCanvas.astro
 ---
 
-<div id="icosahedron-container" class="w-full h-full absolute inset-0 z-0 pointer-events-none flex items-start md:items-center justify-center" style="transform: translateZ(1px);">
-  <canvas id="icosahedron-canvas" class="w-full h-full block" width="0" height="0"></canvas>
+<div id="icosahedron-container" class="absolute inset-0 pointer-events-none" style="z-index: 10; overflow: visible;">
+  <canvas id="icosahedron-canvas" class="absolute top-0 left-0 block" style="overflow: visible;" width="0" height="0"></canvas>
 </div>
 
 <script>
@@ -28,11 +28,14 @@
 
     scene = new THREE.Scene();
 
-    camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100);
+    camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
     camera.position.z = 8;
+    // Offset camera left so the icosahedron appears right-aligned
+    const isMobileView = window.innerWidth < 768;
+    camera.position.x = isMobileView ? 0 : -3;
 
     renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-    renderer.setSize(container.clientWidth, container.clientHeight);
+    renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
     // Scale: smaller to prevent clipping
@@ -64,9 +67,10 @@
 
     const onResize = () => {
       if (!container) return;
-      camera.aspect = container.clientWidth / container.clientHeight;
+      camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
-      renderer.setSize(container.clientWidth, container.clientHeight);
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      camera.position.x = window.innerWidth < 768 ? 0 : -3;
     };
     window.addEventListener('resize', onResize);
 

@@ -2,40 +2,38 @@
 interface Props {
   code: string;
   title: string;
+  colour?: 'signal' | 'copper' | 'cyan';
 }
 
-const { code, title } = Astro.props;
+const { code, title, colour = 'signal' } = Astro.props;
 ---
 
-<section class="section-divider py-3 px-6 relative overflow-hidden" data-section={code}>
-  <div class="max-w-7xl mx-auto flex items-center justify-between">
-    <span class="font-mono text-xs text-ash tracking-widest">
-      {code}
-    </span>
-    <span class="font-subhead font-medium text-sm text-ash uppercase tracking-wide">
-      {title}
-    </span>
-  </div>
+<section class="section-divider py-2 px-6 relative overflow-hidden" data-section={code} data-colour={colour}>
   <div class="sweep-line"></div>
 </section>
 
 <style>
   .section-divider {
-    background: linear-gradient(90deg, var(--color-forge) 0%, var(--color-carbon) 50%, var(--color-forge) 100%);
-    border-top: 1px solid var(--color-wire);
-    border-bottom: 1px solid var(--color-wire);
+    background: transparent;
+    border-top: none;
+    border-bottom: none;
   }
 
   .sweep-line {
     position: absolute;
-    bottom: 0;
+    top: 0;
     left: 0;
     width: 100%;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, var(--color-signal), transparent);
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, var(--sweep-colour) 50%, transparent 100%);
     transform: scaleX(0);
     transform-origin: left;
+    opacity: 0.6;
   }
+
+  [data-colour="signal"] { --sweep-colour: var(--color-signal); }
+  [data-colour="copper"] { --sweep-colour: var(--color-copper); }
+  [data-colour="cyan"]   { --sweep-colour: var(--color-cyan); }
 </style>
 
 <script>
@@ -46,13 +44,13 @@ const { code, title } = Astro.props;
 
   function initDividers() {
     const dividers = document.querySelectorAll('.section-divider');
-    
+
     dividers.forEach(divider => {
       const sweep = divider.querySelector('.sweep-line') as HTMLElement;
-      
+
       if (sweep) {
         let lastScrollY = window.scrollY;
-        
+
         ScrollTrigger.create({
           trigger: divider,
           start: 'top 85%',
@@ -61,9 +59,9 @@ const { code, title } = Astro.props;
             const scrollY = window.scrollY;
             const direction = scrollY > lastScrollY ? 'down' : 'up';
             lastScrollY = scrollY;
-            
+
             const progress = self.progress;
-            
+
             if (direction === 'down') {
               gsap.to(sweep, {
                 scaleX: progress,

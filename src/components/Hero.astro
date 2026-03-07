@@ -8,23 +8,23 @@ const base = '/';
   <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,var(--color-forge)_0%,transparent_60%)] opacity-50 pointer-events-none"></div>
 
   <!-- Icosahedron Canvas Container -->
-  <div class="absolute inset-0 md:left-[60%] md:w-[40%] w-full h-full z-0 opacity-30 md:opacity-100 transition-opacity duration-500">
+  <div class="absolute inset-0 pointer-events-none">
     <IcosahedronCanvas />
   </div>
 
   <!-- Content -->
-  <div class="relative z-10 w-full md:w-[60%] h-full flex flex-col justify-end pb-24 px-6 md:pl-12 md:pr-12">
+  <div class="relative z-20 w-full md:w-[60%] h-full flex flex-col justify-end pb-24 px-6 md:pl-12 md:pr-12 min-w-0 overflow-hidden">
 
-    <div class="hero-eyebrow font-mono text-xs text-ash tracking-[0.2em] uppercase mb-6 opacity-0 translate-y-5">
+    <div class="hero-eyebrow font-mono text-xs text-cyan/70 tracking-[0.2em] uppercase mb-6 opacity-0 translate-y-5">
       SYSTEMS THINKING FOR THE COMMONS. <!-- PLACEHOLDER -->
     </div>
 
     <!-- Headline separated into words for stagger -->
-    <h1 class="font-headline text-chalk leading-[0.95] mb-6 drop-shadow-sm flex flex-wrap" style="font-size: clamp(4rem, 12vw, 8rem); padding-bottom: 0.1em;">
+    <h1 class="font-headline text-chalk leading-[0.95] mb-6 drop-shadow-sm flex flex-wrap" style="font-size: clamp(4.5rem, min(11vw, 7.5vw + 1.5rem), 8rem); padding-bottom: 0.1em;">
       <span class="clip-reveal inline-block"><span class="hero-word inline-block opacity-0 translate-y-16">KYBERNETRIA</span></span>
     </h1>
 
-    <p class="hero-subhead font-body italic text-ash text-xl md:text-2xl max-w-lg mb-10 leading-relaxed">
+    <p class="hero-subhead font-body italic text-copper/70 text-xl md:text-2xl max-w-lg mb-10 leading-relaxed">
       A journal of cybernetics, <br class="md:hidden"/>
       collective intelligence, and the architectures of liberation.
     </p>
@@ -40,10 +40,25 @@ const base = '/';
   </div>
 
   <!-- Scroll Indicator -->
-  <div class="absolute bottom-8 left-1/2 -translate-x-1/2 font-mono text-ash text-sm animate-pulse z-10 pointer-events-none">
-    ↓
+  <div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 pointer-events-none flex flex-col items-center gap-2">
+    <span class="font-mono text-[0.6rem] tracking-[0.3em] text-ash/50 uppercase">scroll</span>
+    <div class="scroll-line w-[1px] h-10 bg-gradient-to-b from-ash/40 to-transparent relative overflow-hidden">
+      <div class="scroll-line-inner absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-signal to-transparent"></div>
+    </div>
   </div>
 </header>
+
+<style>
+  @keyframes scrollDrop {
+    0%   { transform: translateY(-100%); opacity: 0; }
+    20%  { opacity: 1; }
+    80%  { opacity: 1; }
+    100% { transform: translateY(200%); opacity: 0; }
+  }
+  .scroll-line-inner {
+    animation: scrollDrop 2s ease-in-out infinite;
+  }
+</style>
 
 <script>
   import gsap from 'gsap';
