@@ -33,25 +33,61 @@
     // Offset camera left so the icosahedron appears right-aligned
     const isMobileView = window.innerWidth < 768;
     camera.position.x = isMobileView ? 0 : -3;
+    camera.position.y = isMobileView ? -1.5 : 0;
 
     renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-    // Scale: smaller to prevent clipping
     const isMobile = window.innerWidth < 768;
-    const radius = isMobile ? 1.4 : 2.0;
+    const radius = isMobile ? 1.5 : 2.4;
+
+    // --- Inner core edges ---
     const geometry = new THREE.IcosahedronGeometry(radius, 0);
     const edges = new THREE.EdgesGeometry(geometry);
     const material = new THREE.LineBasicMaterial({
       color: 0x7EC8C8,
       transparent: true,
-      opacity: 0.6
+      opacity: 0.85
     });
-
     icosahedron = new THREE.LineSegments(edges, material);
+
+    // --- Outer ghost shell ---
+    const outerGeometry = new THREE.IcosahedronGeometry(radius * 1.18, 0);
+    const outerEdges = new THREE.EdgesGeometry(outerGeometry);
+    const outerMaterial = new THREE.LineBasicMaterial({
+      color: 0x7EC8C8,
+      transparent: true,
+      opacity: 0.12
+    });
+    const outerShell = new THREE.LineSegments(outerEdges, outerMaterial);
+
+    // --- Vertex point glow ---
+    const positions = geometry.attributes.position;
+    const uniqueVerts = [];
+    const seen = new Set();
+    for (let i = 0; i < positions.count; i++) {
+      const key = `${positions.getX(i).toFixed(3)},${positions.getY(i).toFixed(3)},${positions.getZ(i).toFixed(3)}`;
+      if (!seen.has(key)) {
+        seen.add(key);
+        uniqueVerts.push(positions.getX(i), positions.getY(i), positions.getZ(i));
+      }
+    }
+    const pointsGeometry = new THREE.BufferGeometry();
+    pointsGeometry.setAttribute('position', new THREE.Float32BufferAttribute(uniqueVerts, 3));
+    const pointsMaterial = new THREE.PointsMaterial({
+      color: 0xd93f2e,
+      size: 0.08,
+      transparent: true,
+      opacity: 0.9,
+      sizeAttenuation: true
+    });
+    const vertexPoints = new THREE.Points(pointsGeometry, pointsMaterial);
+
     group = new THREE.Group();
     group.add(icosahedron);
+    group.add(outerShell);
+    group.add(vertexPoints);
     scene.add(group);
 
     let mouseX = 0;
@@ -71,6 +107,7 @@
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
       camera.position.x = window.innerWidth < 768 ? 0 : -3;
+      camera.position.y = window.innerWidth < 768 ? -1.5 : 0;
     };
     window.addEventListener('resize', onResize);
 
@@ -80,12 +117,12 @@
       animationId = requestAnimationFrame(animate);
       const delta = clock.getDelta();
 
-      icosahedron.rotation.x += 0.072 * delta;
-      icosahedron.rotation.y += 0.108 * delta;
-      icosahedron.rotation.z += 0.036 * delta;
+      icosahedron.rotation.x += 0.03 * delta;
+      icosahedron.rotation.y += 0.05 * delta;
+      icosahedron.rotation.z += 0.015 * delta;
 
-      const targetX = mouseX * 0.0003;
-      const targetY = mouseY * 0.0003;
+      const targetX = mouseX * 0.0005;
+      const targetY = mouseY * 0.0005;
 
       group.rotation.y += (targetX - group.rotation.y) * 0.05;
       group.rotation.x += (targetY - group.rotation.x) * 0.05;
