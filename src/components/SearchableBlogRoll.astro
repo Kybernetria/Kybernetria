@@ -66,11 +66,11 @@ posts = posts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
             <p class="font-body text-[0.875rem] text-ash line-clamp-3 mb-4">
               {post.data.excerpt}
             </p>
-            <div class="flex flex-wrap gap-1.5">
+            <div class="flex flex-wrap gap-1.5 mb-2">
               {post.data.tags.map((tag) => (
-                <span class="font-mono text-[0.65rem] uppercase px-2 py-0.5 border border-wire/40 rounded text-ash/60 group-hover:border-wire/60 group-hover:text-ash/80 transition-colors">
+                <a href={`/blog/tag/${tag.toLowerCase()}/`} class="tag-link font-mono text-[0.65rem] uppercase px-2 py-0.5 border border-wire/40 rounded text-ash/60 hover:border-signal hover:text-signal transition-colors">
                   {tag}
-                </span>
+                </a>
               ))}
             </div>
           </div>
