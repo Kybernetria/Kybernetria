@@ -14,12 +14,6 @@ let posts = await getCollection('blog', ({ data }) => {
 });
 
 posts = posts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
-
-const allTags = new Set<string>();
-posts.forEach(post => {
-  post.data.tags.forEach(tag => allTags.add(tag));
-});
-const tags = Array.from(allTags).sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
 ---
 
 {showDivider && <SectionDivider code="S3" title="WRITING" />}
@@ -34,8 +28,8 @@ const tags = Array.from(allTags).sort((a, b) => a.toLowerCase().localeCompare(b.
       </div>
     )}
 
-    <div class="mb-12 flex flex-col md:flex-row gap-4 md:items-center md:justify-between">
-      <div class="relative flex-1 max-w-md">
+    <div class="mb-8 max-w-md">
+      <div class="relative">
         <input 
           type="text" 
           id="post-search" 
@@ -45,23 +39,6 @@ const tags = Array.from(allTags).sort((a, b) => a.toLowerCase().localeCompare(b.
         <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-ash/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
         </svg>
-      </div>
-      
-      <div class="flex flex-wrap gap-2">
-        <button 
-          data-tag="all" 
-          class="tag-filter active font-mono text-xs uppercase px-3 py-1 border border-wire rounded-full text-ash hover:border-signal hover:text-signal transition-colors"
-        >
-          All
-        </button>
-        {tags.map(tag => (
-          <button 
-            data-tag={tag.toLowerCase()}
-            class="tag-filter font-mono text-xs uppercase px-3 py-1 border border-wire rounded-full text-ash hover:border-signal hover:text-signal transition-colors"
-          >
-            {tag}
-          </button>
-        ))}
       </div>
     </div>
 
@@ -86,20 +63,15 @@ const tags = Array.from(allTags).sort((a, b) => a.toLowerCase().localeCompare(b.
             <h3 class="font-subhead text-[1.3rem] font-semibold text-chalk group-hover:text-signal transition-colors duration-200 mb-3 leading-tight tracking-tight">
               {post.data.title}
             </h3>
-            <p class="font-body text-[0.875rem] text-ash line-clamp-3 mb-6">
+            <p class="font-body text-[0.875rem] text-ash line-clamp-3 mb-4">
               {post.data.excerpt}
             </p>
-            <div class="flex flex-wrap gap-2 mb-6">
+            <div class="flex flex-wrap gap-1.5">
               {post.data.tags.map((tag) => (
-                <a href={`/blog/tag/${tag.toLowerCase()}/`} class="inline-block border border-cyan/20 rounded-full px-3 py-1 font-mono text-[0.7rem] uppercase text-cyan/50 hover:border-cyan/50 hover:text-cyan/80 transition-colors duration-200" onclick="event.stopPropagation()">
+                <span class="font-mono text-[0.65rem] uppercase px-2 py-0.5 border border-wire/40 rounded text-ash/60 group-hover:border-wire/60 group-hover:text-ash/80 transition-colors">
                   {tag}
-                </a>
+                </span>
               ))}
-            </div>
-            <div class="flex items-center">
-              <span class="font-subhead uppercase text-sm text-signal opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 tracking-widest">
-                Read →
-              </span>
             </div>
           </div>
         </a>
@@ -114,9 +86,6 @@ const tags = Array.from(allTags).sort((a, b) => a.toLowerCase().localeCompare(b.
   const searchInput = document.getElementById('post-search') as HTMLInputElement;
   const postsGrid = document.getElementById('posts-grid');
   const noResults = document.getElementById('no-results');
-  const tagButtons = document.querySelectorAll('.tag-filter');
-  
-  let activeTag = 'all';
 
   function filterPosts() {
     if (!postsGrid || !noResults) return;
@@ -130,10 +99,9 @@ const tags = Array.from(allTags).sort((a, b) => a.toLowerCase().localeCompare(b.
       const excerpt = post.getAttribute('data-excerpt') || '';
       const tags = post.getAttribute('data-tags') || '';
       
-      const matchesSearch = title.includes(searchTerm) || excerpt.includes(searchTerm);
-      const matchesTag = activeTag === 'all' || tags.split(',').includes(activeTag);
+      const matches = title.includes(searchTerm) || excerpt.includes(searchTerm) || tags.includes(searchTerm);
       
-      if (matchesSearch && matchesTag) {
+      if (matches) {
         (post as HTMLElement).style.display = '';
         visibleCount++;
       } else {
@@ -145,20 +113,4 @@ const tags = Array.from(allTags).sort((a, b) => a.toLowerCase().localeCompare(b.
   }
 
   searchInput?.addEventListener('input', filterPosts);
-
-  tagButtons.forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      tagButtons.forEach(b => b.classList.remove('active', 'border-signal', 'text-signal'));
-      (e.currentTarget as HTMLElement).classList.add('active', 'border-signal', 'text-signal');
-      activeTag = (e.currentTarget as HTMLElement).getAttribute('data-tag') || 'all';
-      filterPosts();
-    });
-  });
 </script>
-
-<style>
-  .tag-filter.active {
-    border-color: var(--color-signal);
-    color: var(--color-signal);
-  }
-</style>
