@@ -25,7 +25,7 @@ const base = '/';
   <main class="w-full pt-32 pb-24 px-6 md:px-12 relative z-10">
     <article class="max-w-[68ch] mx-auto w-full">
       <!-- Back Link Top -->
-      <a href={`${base}blog/`} class="inline-flex items-center gap-2 font-mono text-ash text-sm mb-12 hover:text-signal transition-colors">
+      <a href={`${base}writing/`} class="inline-flex items-center gap-2 font-mono text-ash text-sm mb-12 hover:text-signal transition-colors">
         <ArrowLeft size={16} /> Back to Transmissions
       </a>
 
@@ -36,7 +36,7 @@ const base = '/';
           <span class="text-wire hidden md:inline">•</span>
           <div class="flex gap-2">
             {frontmatter.tags && frontmatter.tags.map((tag: string) => (
-              <a href={`/blog/tag/${tag.toLowerCase()}/`} class="font-mono text-[0.7rem] uppercase px-2 py-0.5 border border-wire rounded-full text-ash hover:text-signal hover:border-signal transition-colors">
+              <a href={`/writing/tag/${tag.toLowerCase()}/`} class="font-mono text-[0.7rem] uppercase px-2 py-0.5 border border-wire rounded-full text-ash hover:text-signal hover:border-signal transition-colors">
                 {tag}
               </a>
             ))}
@@ -59,7 +59,7 @@ const base = '/';
 
       <!-- Back Link Bottom -->
       <div class="mt-20 pt-8 border-t border-wire flex justify-between items-center">
-        <a href={`${base}blog/`} class="inline-flex items-center gap-2 font-mono text-ash text-sm hover:text-signal transition-colors group">
+        <a href={`${base}writing/`} class="inline-flex items-center gap-2 font-mono text-ash text-sm hover:text-signal transition-colors group">
           <span class="transform group-hover:-translate-x-1 transition-transform">←</span> Return to Writing
         </a>
       </div>
