@@ -36,9 +36,9 @@ const base = '/';
           <span class="text-wire hidden md:inline">•</span>
           <div class="flex gap-2">
             {frontmatter.tags && frontmatter.tags.map((tag: string) => (
-              <span class="font-mono text-[0.7rem] uppercase px-2 py-0.5 border border-wire rounded-full text-ash">
+              <a href={`/blog/tag/${tag.toLowerCase()}/`} class="font-mono text-[0.7rem] uppercase px-2 py-0.5 border border-wire rounded-full text-ash hover:text-signal hover:border-signal transition-colors">
                 {tag}
-              </span>
+              </a>
             ))}
           </div>
         </div>

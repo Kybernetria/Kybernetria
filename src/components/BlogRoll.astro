@@ -52,9 +52,9 @@ if (limit) {
             </p>
             <div class="flex flex-wrap gap-2 mb-6">
               {post.data.tags.map((tag) => (
-                <span class="inline-block border border-cyan/20 rounded-full px-3 py-1 font-mono text-[0.7rem] uppercase text-cyan/50 group-hover:border-cyan/50 group-hover:text-cyan/80 transition-colors duration-200">
+                <a href={`${base}blog/tag/${tag.toLowerCase()}/`} class="inline-block border border-cyan/20 rounded-full px-3 py-1 font-mono text-[0.7rem] uppercase text-cyan/50 hover:border-cyan/50 hover:text-cyan/80 transition-colors duration-200">
                   {tag}
-                </span>
+                </a>
               ))}
             </div>
             <div class="flex items-center">
