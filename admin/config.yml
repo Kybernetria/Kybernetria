@@ -1,4 +1,4 @@
-# Configured for Codeberg with Sveltia CMS
+# Sveltia CMS configuration for Codeberg
 # OAuth App Redirect URI: https://kybernetria.codeberg.page/admin/
 
 backend:
@@ -6,8 +6,8 @@ backend:
   repo: Kybernetria/pages
   branch: dev
   base_url: https://codeberg.org
-  auth_endpoint: /login/oauth/authorize
-  client_id: 784961e2-5b28-4c43-aafe-9615fa7b92b6
+  api_root: https://codeberg.org/api/v1
+  app_id: 784961e2-5b28-4c43-aafe-9615fa7b92b6
 
 media_folder: public/images/blog
 public_folder: /images/blog
