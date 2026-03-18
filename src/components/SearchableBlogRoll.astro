@@ -68,9 +68,9 @@ posts = posts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
             </p>
             <div class="flex flex-wrap gap-1.5 mb-2">
               {post.data.tags.map((tag) => (
-                <a href={`/blog/tag/${tag.toLowerCase()}/`} class="tag-link font-mono text-[0.65rem] uppercase px-2 py-0.5 border border-wire/40 rounded text-ash/60 hover:border-signal hover:text-signal transition-colors">
+                <button type="button" onclick={`event.stopPropagation(); window.location.href='/blog/tag/${tag.toLowerCase()}/'`} class="font-mono text-[0.65rem] uppercase px-2 py-0.5 border border-wire/40 rounded text-ash/60 hover:border-signal hover:text-signal transition-colors cursor-pointer">
                   {tag}
-                </a>
+                </button>
               ))}
             </div>
           </div>
