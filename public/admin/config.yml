@@ -4,7 +4,7 @@
 backend:
   name: gitea
   repo: Kybernetria/pages
-  branch: main
+  branch: dev
   base_url: https://codeberg.org
   auth_endpoint: /login/oauth/authorize
   client_id: 784961e2-5b28-4c43-aafe-9615fa7b92b6
