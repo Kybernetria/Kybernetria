@@ -1,16 +1,13 @@
-# -------------------------------------------------------
-# SETUP REQUIRED: Replace YOURUSERNAME and repo path.
-# For GitHub: set up OAuth via Sveltia CMS Auth worker.
-# For Codeberg: change backend name to 'gitea' and
-#   set base_url to https://codeberg.org
-# See: https://decapcms.org/docs/backends-overview/
-# -------------------------------------------------------
+# Configured for Codeberg with Sveltia CMS
+# OAuth App Redirect URI: https://kybernetria.codeberg.page/admin/
 
 backend:
-  name: github                         # change to 'gitea' for Codeberg
-  repo: YOURUSERNAME/kybernetria       # replace with actual repo path
+  name: gitea
+  repo: Kybernetria/pages
   branch: main
-  base_url: https://sveltia-cms-auth.YOURWORKER.workers.dev
+  base_url: https://codeberg.org
+  auth_endpoint: /login/oauth/authorize
+  client_id: 784961e2-5b28-4c43-aafe-9615fa7b92b6
 
 media_folder: public/images/blog
 public_folder: /images/blog
