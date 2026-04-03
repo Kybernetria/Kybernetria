@@ -1,5 +1,6 @@
 #!/bin/sh
 set -e
+# Rebuild and redeploy the Pages site.
 
 BRANCH="pages"
 DEPLOY_DIR=$(mktemp -d)
