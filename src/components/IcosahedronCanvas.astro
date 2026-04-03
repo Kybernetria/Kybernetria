@@ -3,7 +3,7 @@
 ---
 
 <div id="icosahedron-container" class="absolute inset-0 pointer-events-none" style="z-index: 10; overflow: visible;">
-  <canvas id="icosahedron-canvas" class="absolute top-0 left-0 block" style="overflow: visible;" width="0" height="0"></canvas>
+  <canvas id="icosahedron-canvas" class="absolute inset-0 block w-full h-full" style="overflow: visible;" width="0" height="0"></canvas>
 </div>
 
 <script>
@@ -12,37 +12,31 @@
   import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
   gsap.registerPlugin(ScrollTrigger);
+  ScrollTrigger.config({ ignoreMobileResize: true });
 
-  let scene;
-  let camera;
-  let renderer;
-  let icosahedron;
-  let group;
-  let animationId;
+  let activeCanvas = null;
+  let cleanupCurrent = () => {};
 
   function init() {
     const container = document.getElementById('icosahedron-container');
     const canvas = document.getElementById('icosahedron-canvas');
 
     if (!(container instanceof HTMLDivElement) || !(canvas instanceof HTMLCanvasElement)) return;
+    if (activeCanvas === canvas) return;
 
-    scene = new THREE.Scene();
+    cleanupCurrent();
+    activeCanvas = canvas;
 
-    camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
     camera.position.z = 8;
-    // Offset camera left so the icosahedron appears right-aligned
-    const isMobileView = window.innerWidth < 768;
-    camera.position.x = isMobileView ? 0 : -3;
-    camera.position.y = isMobileView ? -1.5 : 0;
 
-    renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
     const isMobile = window.innerWidth < 768;
     const radius = isMobile ? 1.5 : 2.4;
 
-    // --- Inner core edges ---
     const geometry = new THREE.IcosahedronGeometry(radius, 0);
     const edges = new THREE.EdgesGeometry(geometry);
     const material = new THREE.LineBasicMaterial({
@@ -50,9 +44,8 @@
       transparent: true,
       opacity: 0.85
     });
-    icosahedron = new THREE.LineSegments(edges, material);
+    const icosahedron = new THREE.LineSegments(edges, material);
 
-    // --- Outer ghost shell ---
     const outerGeometry = new THREE.IcosahedronGeometry(radius * 1.18, 0);
     const outerEdges = new THREE.EdgesGeometry(outerGeometry);
     const outerMaterial = new THREE.LineBasicMaterial({
@@ -62,7 +55,6 @@
     });
     const outerShell = new THREE.LineSegments(outerEdges, outerMaterial);
 
-    // --- Vertex point glow ---
     const positions = geometry.attributes.position;
     const uniqueVerts = [];
     const seen = new Set();
@@ -73,6 +65,7 @@
         uniqueVerts.push(positions.getX(i), positions.getY(i), positions.getZ(i));
       }
     }
+
     const pointsGeometry = new THREE.BufferGeometry();
     pointsGeometry.setAttribute('position', new THREE.Float32BufferAttribute(uniqueVerts, 3));
     const pointsMaterial = new THREE.PointsMaterial({
@@ -84,7 +77,7 @@
     });
     const vertexPoints = new THREE.Points(pointsGeometry, pointsMaterial);
 
-    group = new THREE.Group();
+    const group = new THREE.Group();
     group.add(icosahedron);
     group.add(outerShell);
     group.add(vertexPoints);
@@ -92,27 +85,43 @@
 
     let mouseX = 0;
     let mouseY = 0;
-    const windowHalfX = window.innerWidth / 2;
-    const windowHalfY = window.innerHeight / 2;
+    let animationId = 0;
+
+    const syncSceneSize = () => {
+      const { width, height } = container.getBoundingClientRect();
+      if (!width || !height) return;
+
+      camera.aspect = width / height;
+      camera.updateProjectionMatrix();
+      renderer.setSize(width, height, false);
+
+      const mobileView = width < 768;
+      camera.position.x = mobileView ? 0 : -3;
+      camera.position.y = mobileView ? -1.5 : 0;
+    };
 
     const onMouseMove = (event) => {
-      mouseX = (event.clientX - windowHalfX);
-      mouseY = (event.clientY - windowHalfY);
+      const rect = container.getBoundingClientRect();
+      mouseX = event.clientX - (rect.left + rect.width / 2);
+      mouseY = event.clientY - (rect.top + rect.height / 2);
     };
+
     document.addEventListener('mousemove', onMouseMove);
 
+    const resizeObserver = new ResizeObserver(() => {
+      syncSceneSize();
+      ScrollTrigger.refresh();
+    });
+    resizeObserver.observe(container);
+
     const onResize = () => {
-      if (!container) return;
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      camera.position.x = window.innerWidth < 768 ? 0 : -3;
-      camera.position.y = window.innerWidth < 768 ? -1.5 : 0;
+      syncSceneSize();
     };
     window.addEventListener('resize', onResize);
 
-    const clock = new THREE.Clock();
+    syncSceneSize();
 
+    const clock = new THREE.Clock();
     const animate = () => {
       animationId = requestAnimationFrame(animate);
       const delta = clock.getDelta();
@@ -131,35 +140,45 @@
     };
     animate();
 
-    // Fade to 30% opacity on scroll, never fully vanish
     const scrollCtx = gsap.context(() => {
       gsap.to(container, {
         scrollTrigger: {
-          trigger: "body",
-          start: "top top",
-          end: () => `${window.innerHeight}px top`,
-          invalidateOnRefresh: true,
+          trigger: '#hero-section',
+          start: 'top top',
+          end: () => `+=${container.getBoundingClientRect().height || 1}`,
           scrub: true,
+          invalidateOnRefresh: true,
         },
         scale: 0.7,
         opacity: 0.3,
-        ease: "none"
+        ease: 'none'
       });
-    });
+    }, container);
 
-    // Cleanup on view transition
-    document.addEventListener("astro:before-swap", () => {
+    cleanupCurrent = () => {
+      if (activeCanvas !== canvas) return;
+
       cancelAnimationFrame(animationId);
+      resizeObserver.disconnect();
       window.removeEventListener('resize', onResize);
       document.removeEventListener('mousemove', onMouseMove);
       scrollCtx.revert();
-      if(renderer) {
-        renderer.dispose();
-      }
-    }, { once: true });
+      renderer.dispose();
+      geometry.dispose();
+      edges.dispose();
+      material.dispose();
+      outerGeometry.dispose();
+      outerEdges.dispose();
+      outerMaterial.dispose();
+      pointsGeometry.dispose();
+      pointsMaterial.dispose();
+      activeCanvas = null;
+      cleanupCurrent = () => {};
+    };
+
+    document.addEventListener('astro:before-swap', cleanupCurrent, { once: true });
   }
 
-  // Initialize on page load and view transitions
   init();
-  document.addEventListener("astro:page-load", init);
+  document.addEventListener('astro:page-load', init);
 </script>
