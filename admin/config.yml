@@ -4,7 +4,7 @@
 backend:
   name: github
   repo: Kybernetria/Kybernetria
-  branch: dev
+  branch: main
   base_url: https://github.com
   api_root: https://api.github.com
   # Add your GitHub OAuth app/client ID here if you want /admin to authenticate.
