@@ -26,9 +26,8 @@ if (limit) {
   <div class="max-w-7xl mx-auto">
 
     {showHeading && (
-      <div class="flex items-center justify-between mb-12 border-b border-wire pb-4">
+      <div class="mb-12 border-b border-wire pb-4">
         <h2 class="font-subhead text-2xl uppercase tracking-widest text-chalk">Recent Writing</h2>
-        <a href={`${base}writing/`} class="font-mono text-sm text-signal hover:text-copper transition-colors">View All →</a>
       </div>
     )}
 
@@ -68,5 +67,13 @@ if (limit) {
         </article>
       ))}
     </div>
+
+    {showHeading && (
+      <div class="mt-12 text-center">
+        <a href={`${base}writing/`} class="inline-flex items-center gap-2 font-subhead uppercase text-sm text-ash hover:text-signal transition-colors">
+          View All Writing <span>→</span>
+        </a>
+      </div>
+    )}
   </div>
 </section>
