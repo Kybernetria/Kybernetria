@@ -4,7 +4,7 @@ import wikiLinks from './src/plugins/wiki-links.mjs';
 
 export default defineConfig({
   output: 'static',
-  site: 'https://kybernetria.codeberg.page',
+  site: 'https://kybernetria.com',
   integrations: [tailwind()],
   markdown: {
     remarkPlugins: [wikiLinks],
