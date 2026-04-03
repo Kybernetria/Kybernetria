@@ -1,6 +1,6 @@
 #!/bin/sh
 set -e
-# Rebuild and redeploy the Pages site.
+# Local-only deploy: build here, then sync dist/ to the GitHub Pages branch.
 
 BRANCH="pages"
 DEPLOY_DIR=$(mktemp -d)
@@ -14,6 +14,8 @@ trap cleanup EXIT
 
 echo "🔨  Building site..."
 npm run build
+
+git fetch origin --prune
 
 echo "🌿  Preparing '$BRANCH' branch..."
 
