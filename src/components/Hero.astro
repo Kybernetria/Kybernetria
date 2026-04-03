@@ -13,22 +13,18 @@ const base = '/';
   </div>
 
   <!-- Content -->
-  <div class="relative z-20 w-full md:w-[60%] h-full flex flex-col justify-end pb-36 md:pb-24 px-6 md:pl-12 md:pr-12 min-w-0">
-
-    <div class="hero-eyebrow font-mono text-xs text-copper/70 tracking-[0.2em] uppercase mb-6 opacity-0 translate-y-5">
-      SYSTEMS THINKING FOR THE COMMONS. <!-- PLACEHOLDER -->
-    </div>
+  <div class="relative z-20 w-full md:w-[65%] h-full flex flex-col justify-end pb-36 md:pb-40 px-6 md:pl-12 md:pr-12 min-w-0">
 
     <!-- Headline separated into words for stagger -->
-    <h1 class="font-headline text-chalk leading-[0.95] mb-6 drop-shadow-sm flex flex-wrap" style="font-size: clamp(3rem, 8vw, 8rem); padding-bottom: 0.1em;">
-      <span class="clip-reveal inline-block" style="padding-top: 0.15em;"><span class="hero-word inline-block opacity-0 translate-y-16">KYBERNETRIA</span></span>
+    <h1 class="font-headline text-chalk leading-[0.85] mb-6 drop-shadow-sm flex flex-wrap" style="font-size: clamp(3.5rem, 8.5vw, 8.5rem); padding-bottom: 0.05em;">
+      <span class="clip-reveal inline-block" style="padding-top: 0.1em;"><span class="hero-word inline-block opacity-0 translate-y-16">KYBERNETRIA</span></span>
     </h1>
 
-    <p class="hero-subhead font-body italic text-ash text-xl md:text-2xl max-w-lg mb-10 leading-relaxed">
-      A journal of cybernetics, <br class="md:hidden"/>
-      collective intelligence, and the architectures of liberation.
+    <p class="hero-subhead font-body italic text-ash text-xl md:text-2xl max-w-2xl mb-12 leading-relaxed">
+      A journal of cybernetics,<br/>
+      collective intelligence,<br/>
+      and the architectures of liberation.
     </p>
-
 
     <div class="hero-cta flex flex-wrap gap-6 items-center opacity-0 translate-y-5 font-subhead uppercase tracking-wide">
       <a href={`${base}writing/`} class="text-signal hover:text-copper transition-colors duration-200 flex items-center gap-2 group">
@@ -67,25 +63,19 @@ const base = '/';
     const ctx = gsap.context(() => {
       const tl = gsap.timeline();
 
-      tl.to('.hero-eyebrow', {
-        y: 0,
-        opacity: 1,
-        duration: 0.8,
-        ease: "power3.out"
-      }, "+=0.1")
-      .to('.hero-word', {
+      tl.to('.hero-word', {
         y: 0,
         opacity: 1,
         duration: 0.8,
         stagger: 0.04,
         ease: "power3.out"
-      }, "-=0.6")
+      })
       .to('.hero-subhead', {
         y: 0,
         opacity: 1,
         duration: 0.8,
         ease: "power3.out"
-      }, "-=0.2")
+      }, "-=0.4")
       .to('.hero-cta', {
         y: 0,
         opacity: 1,

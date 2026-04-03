@@ -70,15 +70,15 @@ const initial = initialLabel[page];
     if (!bar) return;
 
     const sectionMap: Record<string, string> = JSON.parse(bar.dataset.sectionMap || '{}');
-    const initialLabel = bar.dataset.initialLabel || '';
+    const initialLbl = bar.dataset.initialLabel || '';
 
     const currentSectionEl = document.getElementById('current-section');
     const scrollProgressEl = document.getElementById('scroll-progress');
     const scrollPercentEl  = document.getElementById('scroll-percent');
 
-    if (currentSectionEl) currentSectionEl.textContent = initialLabel;
+    if (currentSectionEl) currentSectionEl.textContent = initialLbl;
 
-    // --- Scroll progress via window scroll ---
+    // --- Scroll progress ---
     function onScroll() {
       const scrollTop    = window.scrollY;
       const docHeight    = document.documentElement.scrollHeight - window.innerHeight;
@@ -88,27 +88,42 @@ const initial = initialLabel[page];
     }
 
     window.addEventListener('scroll', onScroll, { passive: true });
-    onScroll(); // set initial state
+    onScroll();
 
-    // --- Section label via IntersectionObserver ---
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const label = sectionMap[entry.target.id];
-            if (label && currentSectionEl) {
-              currentSectionEl.textContent = label;
-            }
-          }
-        });
-      },
-      { threshold: 0.3 }
-    );
+    // --- Section detection via scroll position math (no flicker) ---
+    const sectionIds = Object.keys(sectionMap);
+    const sectionEls = sectionIds
+      .map(id => ({ id, label: sectionMap[id], el: document.getElementById(id) }))
+      .filter(s => s.el);
 
-    Object.keys(sectionMap).forEach((id) => {
-      const el = document.getElementById(id);
-      if (el) observer.observe(el);
-    });
+    let ticking = false;
+
+    function updateSection() {
+      const scrollY = window.scrollY + window.innerHeight * 0.35;
+      let current = initialLbl;
+
+      for (const section of sectionEls) {
+        const top = section.el.offsetTop;
+        if (scrollY >= top) {
+          current = section.label;
+        }
+      }
+
+      if (currentSectionEl && currentSectionEl.textContent !== current) {
+        currentSectionEl.textContent = current;
+      }
+
+      ticking = false;
+    }
+
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        requestAnimationFrame(updateSection);
+        ticking = true;
+      }
+    }, { passive: true });
+
+    updateSection();
   }
 
   initStatusBar();
