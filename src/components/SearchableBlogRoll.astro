@@ -48,6 +48,7 @@ posts = posts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
           data-title={post.data.title.toLowerCase()}
           data-excerpt={post.data.excerpt.toLowerCase()}
           data-tags={post.data.tags.join(',').toLowerCase()}
+          data-date={post.data.date.toISOString().split('T')[0]}
           class="group relative bg-plate border-l-2 border-l-signal/30 border-t border-r border-b border-wire/40 rounded-xl hover:border-l-signal hover:border-wire hover:bg-plate/80 transition-all duration-300 overflow-hidden">
           {post.data.heroImage && (
             <a href={`/writing/${post.id.replace(/\.md$/, '')}/`} class="block">
@@ -103,8 +104,9 @@ posts = posts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
       const title = post.getAttribute('data-title') || '';
       const excerpt = post.getAttribute('data-excerpt') || '';
       const tags = post.getAttribute('data-tags') || '';
+      const date = post.getAttribute('data-date') || '';
       
-      const matches = title.includes(searchTerm) || excerpt.includes(searchTerm) || tags.includes(searchTerm);
+      const matches = title.includes(searchTerm) || excerpt.includes(searchTerm) || tags.includes(searchTerm) || date.includes(searchTerm);
       
       if (matches) {
         (post as HTMLElement).style.display = '';
