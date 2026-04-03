@@ -1,13 +1,13 @@
-# Sveltia CMS configuration for Codeberg
-# OAuth App Redirect URI: https://kybernetria.codeberg.page/admin/
+# Sveltia CMS configuration for GitHub
+# OAuth App Redirect URI: https://kybernetria.com/admin/
 
 backend:
-  name: gitea
-  repo: Kybernetria/pages
+  name: github
+  repo: Kybernetria/Kybernetria
   branch: dev
-  base_url: https://codeberg.org
-  api_root: https://codeberg.org/api/v1
-  app_id: 784961e2-5b28-4c43-aafe-9615fa7b92b6
+  base_url: https://github.com
+  api_root: https://api.github.com
+  # Add your GitHub OAuth app/client ID here if you want /admin to authenticate.
 
 media_folder: public/images/blog
 public_folder: /images/blog
