@@ -1,0 +1,181 @@
+---
+import { Menu } from 'lucide-astro';
+
+interface Props {
+  transparent?: boolean;
+}
+
+const { transparent = false } = Astro.props;
+const base = '/';
+---
+
+<nav id="navbar" class={`fixed top-0 left-0 w-full z-50 border-b transition-all duration-300 px-6 py-4 flex items-center justify-between ${transparent ? 'border-transparent' : 'border-transparent'}`} data-transparent={transparent}>
+  <!-- Left: Logo -->
+  <div class="flex-shrink-0">
+    <a href={base} class="font-headline text-[1.1rem] tracking-widest text-chalk hover:text-signal transition-colors duration-150 relative z-20">
+      KYBERNETRIA
+    </a>
+  </div>
+
+  <!-- Center: Nav links (Desktop) -->
+  <div class="hidden md:flex gap-8 items-center absolute left-1/2 -translate-x-1/2">
+    <a href={`${base}writing/`} class="nav-link font-subhead uppercase text-chalk text-base tracking-wide relative overflow-hidden group">
+      Writing
+      <span class="absolute bottom-0 left-0 w-full h-[2px] bg-signal -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-300 ease-[cubic-bezier(0.25,0.46,0.45,0.94)]"></span>
+    </a>
+    <a href={`${base}about/`} class="nav-link font-subhead uppercase text-chalk text-base tracking-wide relative overflow-hidden group">
+      About
+      <span class="absolute bottom-0 left-0 w-full h-[2px] bg-signal -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-300 ease-[cubic-bezier(0.25,0.46,0.45,0.94)]"></span>
+    </a>
+    <a href={`${base}tools/`} class="nav-link font-subhead uppercase text-chalk text-base tracking-wide relative overflow-hidden group">
+      Tools
+      <span class="absolute bottom-0 left-0 w-full h-[2px] bg-signal -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-300 ease-[cubic-bezier(0.25,0.46,0.45,0.94)]"></span>
+    </a>
+  </div>
+
+  <!-- Mobile Menu Button -->
+  <button id="mobile-menu-btn" class="md:hidden text-chalk hover:text-signal transition-colors relative z-50 pointer-events-auto" aria-label="Toggle Menu">
+    <Menu size={28} />
+  </button>
+
+  <!-- Mobile Overlay -->
+  <div id="mobile-nav-overlay" class="fixed top-0 left-0 w-full h-screen h-[100dvh] bg-carbon/95 backdrop-blur-lg z-40 flex md:hidden flex-col items-center justify-center gap-8 opacity-0 pointer-events-none transition-opacity duration-300">
+    <a href={`${base}writing/`} class="font-headline text-5xl text-chalk hover:text-signal transition-colors">Writing</a>
+    <a href={`${base}about/`} class="font-headline text-5xl text-chalk hover:text-signal transition-colors">About</a>
+    <a href={`${base}tools/`} class="font-headline text-5xl text-chalk hover:text-signal transition-colors">Tools</a>
+  </div>
+</nav>
+
+<script>
+  import gsap from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  function initNav() {
+    const navbar = document.getElementById('navbar');
+
+    if (navbar && !navbar.dataset.scrollTriggerInit) {
+      const isTransparent = navbar.dataset.transparent === 'true';
+      
+      if (!isTransparent) {
+        ScrollTrigger.create({
+          start: "80px top",
+          onEnter: () => {
+            navbar.classList.add('bg-carbon/80', 'backdrop-blur-md', 'border-wire');
+            navbar.classList.remove('border-transparent');
+          },
+          onLeaveBack: () => {
+            navbar.classList.remove('bg-carbon/80', 'backdrop-blur-md', 'border-wire');
+            navbar.classList.add('border-transparent');
+          }
+        });
+      }
+      navbar.dataset.scrollTriggerInit = 'true';
+    }
+
+    const menuBtn = document.getElementById('mobile-menu-btn');
+    const overlay = document.getElementById('mobile-nav-overlay');
+
+    if (!(menuBtn instanceof HTMLButtonElement) || !(overlay instanceof HTMLDivElement)) {
+      return;
+    }
+
+    if (menuBtn.dataset.navInit === 'true') {
+      return;
+    }
+    menuBtn.dataset.navInit = 'true';
+
+    let isOpen = false;
+
+    const lockScroll = () => {
+      document.documentElement.style.overflow = 'hidden';
+      document.body.style.overflow = 'hidden';
+      document.documentElement.style.overscrollBehavior = 'none';
+      document.body.style.overscrollBehavior = 'none';
+      document.documentElement.style.touchAction = 'none';
+      document.body.style.touchAction = 'none';
+      document.body.classList.add('mobile-menu-open');
+    };
+
+    const unlockScroll = () => {
+      document.documentElement.style.overflow = '';
+      document.body.style.overflow = '';
+      document.documentElement.style.overscrollBehavior = '';
+      document.body.style.overscrollBehavior = '';
+      document.documentElement.style.touchAction = '';
+      document.body.style.touchAction = '';
+      document.body.classList.remove('mobile-menu-open');
+    };
+
+    const openMenu = () => {
+      if (isOpen) return;
+      isOpen = true;
+      lockScroll();
+      overlay.classList.remove('opacity-0', 'pointer-events-none');
+      overlay.classList.add('opacity-100', 'pointer-events-auto');
+      menuBtn.setAttribute('aria-expanded', 'true');
+    };
+
+    const closeMenu = () => {
+      if (!isOpen) return;
+      isOpen = false;
+      overlay.classList.add('opacity-0', 'pointer-events-none');
+      overlay.classList.remove('opacity-100', 'pointer-events-auto');
+      menuBtn.setAttribute('aria-expanded', 'false');
+      unlockScroll();
+    };
+
+    const onMenuToggle = () => {
+      if (isOpen) {
+        closeMenu();
+      } else {
+        openMenu();
+      }
+    };
+
+    const onOverlayClick = (event: MouseEvent) => {
+      if (event.target === overlay) {
+        closeMenu();
+      }
+    };
+
+    const onKeydown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        closeMenu();
+      }
+    };
+
+    isOpen = false;
+    overlay.classList.add('opacity-0', 'pointer-events-none');
+    overlay.classList.remove('opacity-100', 'pointer-events-auto');
+    menuBtn.setAttribute('aria-expanded', 'false');
+
+    menuBtn.addEventListener('click', onMenuToggle);
+    overlay.addEventListener('click', onOverlayClick);
+    document.addEventListener('keydown', onKeydown);
+
+    const links = overlay.querySelectorAll('a');
+    links.forEach((link) => {
+      link.addEventListener('click', closeMenu);
+    });
+
+    document.addEventListener(
+      'astro:before-swap',
+      () => {
+        closeMenu();
+        menuBtn.removeEventListener('click', onMenuToggle);
+        overlay.removeEventListener('click', onOverlayClick);
+        document.removeEventListener('keydown', onKeydown);
+        links.forEach((link) => {
+          link.removeEventListener('click', closeMenu);
+        });
+        delete menuBtn.dataset.navInit;
+      },
+      { once: true }
+    );
+  }
+
+  initNav();
+  document.addEventListener("astro:page-load", initNav);
+</script>

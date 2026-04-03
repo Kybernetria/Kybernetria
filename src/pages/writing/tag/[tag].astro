@@ -1,0 +1,88 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import Navbar from '../../../components/Navbar.astro';
+import Footer from '../../../components/Footer.astro';
+import SectionDivider from '../../../components/SectionDivider.astro';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  const tags = new Set<string>();
+  
+  posts.forEach(post => {
+    post.data.tags.forEach(tag => tags.add(tag.toLowerCase()));
+  });
+  
+  return Array.from(tags).map(tag => ({
+    params: { tag },
+  }));
+}
+
+const { tag } = Astro.params;
+
+let posts = await getCollection('blog', ({ data }) => {
+  return import.meta.env.PROD ? data.draft !== true : true;
+});
+
+posts = posts.filter(post => 
+  post.data.tags.some(t => t.toLowerCase() === tag)
+);
+
+posts = posts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const tagName = posts[0]?.data.tags.find(t => t.toLowerCase() === tag) || tag;
+---
+
+<BaseLayout title={`${tagName} | Kybernetria`}>
+  <Navbar />
+  
+  <main class="pt-32 min-h-[80vh]">
+    <div class="max-w-7xl mx-auto px-6 md:px-12 mb-12">
+      <a href="/writing/" class="inline-flex items-center gap-2 font-mono text-ash text-sm mb-6 hover:text-signal transition-colors">
+        ← Back to Writing
+      </a>
+      <h1 class="font-headline text-5xl md:text-7xl text-chalk leading-[0.9] tracking-wide mb-4">
+        {tagName.toUpperCase()}
+      </h1>
+      <p class="font-body text-ash text-lg">
+        {posts.length} article{posts.length !== 1 ? 's' : ''} tagged with "{tagName}"
+      </p>
+    </div>
+
+    <SectionDivider code="T1" title="ARTICLES" />
+
+    <section class="w-full py-24 px-6 md:px-12" style="background: linear-gradient(to bottom, var(--color-carbon) 0%, var(--color-forge) 15%, var(--color-forge) 70%, var(--color-carbon) 100%);">
+      <div class="max-w-7xl mx-auto">
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+          {posts.map((post) => (
+            <a href={`/writing/${post.id.replace(/\.md$/, '')}/`} class="block group relative bg-plate border-l-2 border-l-signal/30 border-t border-r border-b border-wire/40 rounded-xl hover:border-l-signal hover:border-wire hover:bg-plate/80 hover:-translate-y-1 transition-all duration-300 overflow-hidden">
+              {post.data.heroImage && (
+                <div class="w-full aspect-video overflow-hidden">
+                  <img src={post.data.heroImage} alt="" class="w-full h-full object-cover grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500" />
+                </div>
+              )}
+              <div class="p-6 md:p-8">
+                <time datetime={post.data.date.toISOString()} class="block font-mono text-xs text-copper/60 tracking-widest mb-4">
+                  {post.data.date.toISOString().split('T')[0]}
+                </time>
+                <h3 class="font-subhead text-[1.3rem] font-semibold text-chalk group-hover:text-signal transition-colors duration-200 mb-3 leading-tight tracking-tight">
+                  {post.data.title}
+                </h3>
+                <p class="font-body text-[0.875rem] text-ash line-clamp-3 mb-6">
+                  {post.data.excerpt}
+                </p>
+                <div class="flex items-center">
+                  <span class="font-subhead uppercase text-sm text-signal opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 tracking-widest">
+                    Read →
+                  </span>
+                </div>
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</BaseLayout>

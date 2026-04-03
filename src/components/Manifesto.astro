@@ -1,0 +1,102 @@
+---
+// Manifesto.astro
+---
+
+<section id="manifesto-section" class="w-full bg-carbon relative py-20 px-6 md:px-12 border-l-2 border-l-copper/20">
+  <div class="flex flex-col md:flex-row gap-8 md:gap-16 items-start">
+
+    <!-- Left Col: Label -->
+    <div class="md:w-16 flex-shrink-0 relative h-16 md:h-full">
+      <a href="/about/" class="font-mono text-lg text-cyan tracking-widest md:-rotate-90 md:origin-left md:absolute md:top-20 md:left-0 whitespace-nowrap hover:text-signal transition-colors">
+        Manifesto
+      </a>
+    </div>
+
+    <!-- Right Col: Statement -->
+    <div class="max-w-4xl">
+      <p class="font-body text-ash text-base md:text-lg mb-6 max-w-2xl leading-relaxed">
+      <p class="font-body text-ash text-base md:text-lg mb-6 max-w-2xl leading-relaxed">
+        <span class="m-word inline-block opacity-0 translate-y-3">Most</span>
+        <span class="m-word inline-block opacity-0 translate-y-3">technology</span>
+        <span class="m-word inline-block opacity-0 translate-y-3">treats</span>
+        <span class="m-word inline-block opacity-0 translate-y-3">systems</span>
+        <span class="m-word inline-block opacity-0 translate-y-3">as</span>
+        <span class="m-word inline-block opacity-0 translate-y-3">machines</span>
+        <span class="m-word inline-block opacity-0 translate-y-3">to</span>
+        <span class="m-word inline-block opacity-0 translate-y-3">optimize.</span>
+        <!-- PLACEHOLDER -->
+      </p>
+      <p class="font-body text-ash text-base md:text-lg mb-6 leading-relaxed">
+        <span class="m-word inline-block opacity-0 translate-y-3">We</span>
+        <span class="m-word inline-block opacity-0 translate-y-3">treat</span>
+        <span class="m-word inline-block opacity-0 translate-y-3">them</span>
+        <span class="m-word inline-block opacity-0 translate-y-3">as</span>
+        <!-- PLACEHOLDER -->
+      </p>
+
+      <h2 class="font-headline text-signal text-5xl md:text-7xl leading-[0.95] tracking-wide m-final-phrase inline-block opacity-0 translate-y-4">
+        LIVING, CONTESTED, COLLECTIVE TERRITORY.
+      </h2>
+
+      <!-- PLACEHOLDER: manifesto follow-up -->
+      <p class="font-body text-ash text-base md:text-lg mt-8 max-w-2xl leading-relaxed m-followup opacity-0 translate-y-3">
+        Kybernetria exists to map these territories — to trace the feedback loops that bind us, to design the protocols that free us, and to insist that every system we build encodes the world we actually want to live in.
+      </p>
+    </div>
+
+  </div>
+</section>
+
+<script>
+  import gsap from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  function initManifesto() {
+    const ctx = gsap.context(() => {
+      const words = gsap.utils.toArray('.m-word');
+
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: "#manifesto-section",
+          start: "top 80%",
+          toggleActions: "play none none none"
+        }
+      });
+
+      if (words.length > 0) {
+        tl.to(words, {
+          y: 0,
+          opacity: 1,
+          duration: 0.5,
+          stagger: 0.05,
+          ease: "power2.out"
+        });
+      }
+
+      tl.to('.m-final-phrase', {
+        y: 0,
+        opacity: 1,
+        scale: 1.02,
+        duration: 0.8,
+        ease: "back.out(1.7)"
+      }, "-=0.2");
+
+      tl.to('.m-followup', {
+        y: 0,
+        opacity: 1,
+        duration: 0.6,
+        ease: "power2.out"
+      }, "-=0.3");
+
+    }, "#manifesto-section");
+
+    document.addEventListener("astro:before-swap", () => {
+      ctx.revert();
+    }, { once: true });
+  }
+
+  initManifesto();
+  document.addEventListener("astro:page-load", initManifesto);
+</script>
