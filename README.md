@@ -1,4 +1,4 @@
-## Hi there 👋
+## Welcome to Kybernetria. Trying my best not to add to the slop. Building and employing tools of variety attenuation and amplification on the right side of the equation! 
 
 <!--
 **Kybernetria/Kybernetria** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
