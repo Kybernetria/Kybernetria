@@ -34,17 +34,39 @@ const base = '/';
   </div>
 
   <!-- Mobile Menu Button -->
-  <button id="mobile-menu-btn" class="md:hidden text-chalk hover:text-signal transition-colors relative z-50 pointer-events-auto" aria-label="Toggle Menu">
+  <button
+    id="mobile-menu-btn"
+    type="button"
+    class="md:hidden text-chalk hover:text-signal transition-colors relative z-50 pointer-events-auto"
+    aria-label="Toggle Menu"
+    aria-controls="mobile-nav-overlay"
+    aria-expanded="false"
+  >
     <Menu size={28} />
   </button>
-
-  <!-- Mobile Overlay -->
-  <div id="mobile-nav-overlay" class="fixed top-0 left-0 w-full h-screen h-[100dvh] bg-carbon/95 backdrop-blur-lg z-40 flex md:hidden flex-col items-center justify-center gap-8 opacity-0 pointer-events-none transition-opacity duration-300">
-    <a href={`${base}writing/`} class="font-headline text-5xl text-chalk hover:text-signal transition-colors">Writing</a>
-    <a href={`${base}about/`} class="font-headline text-5xl text-chalk hover:text-signal transition-colors">About</a>
-    <a href={`${base}tools/`} class="font-headline text-5xl text-chalk hover:text-signal transition-colors">Projects</a>
-  </div>
 </nav>
+
+<!-- Mobile Overlay -->
+<div
+  id="mobile-nav-overlay"
+  class="fixed inset-0 z-[60] bg-carbon/95 backdrop-blur-lg flex md:hidden flex-col items-center justify-center gap-8 opacity-0 invisible pointer-events-none transition-opacity duration-300"
+  aria-hidden="true"
+  style="min-height: 100vh; min-height: 100svh; min-height: 100dvh; padding: calc(env(safe-area-inset-top, 0px) + 1.5rem) calc(env(safe-area-inset-right, 0px) + 1.5rem) calc(env(safe-area-inset-bottom, 0px) + 1.5rem) calc(env(safe-area-inset-left, 0px) + 1.5rem); overflow-y: auto;"
+>
+  <button
+    id="mobile-nav-close-btn"
+    type="button"
+    class="absolute top-6 right-6 text-chalk hover:text-signal transition-colors"
+    aria-label="Close Menu"
+    style="top: calc(env(safe-area-inset-top, 0px) + 1rem); right: calc(env(safe-area-inset-right, 0px) + 1rem);"
+  >
+    <span class="font-subhead uppercase tracking-wide text-lg">Close</span>
+  </button>
+
+  <a href={`${base}writing/`} class="font-headline text-5xl text-chalk hover:text-signal transition-colors">Writing</a>
+  <a href={`${base}about/`} class="font-headline text-5xl text-chalk hover:text-signal transition-colors">About</a>
+  <a href={`${base}tools/`} class="font-headline text-5xl text-chalk hover:text-signal transition-colors">Projects</a>
+</div>
 
 <script>
   import gsap from 'gsap';
@@ -57,10 +79,10 @@ const base = '/';
 
     if (navbar && !navbar.dataset.scrollTriggerInit) {
       const isTransparent = navbar.dataset.transparent === 'true';
-      
+
       if (!isTransparent) {
         ScrollTrigger.create({
-          start: "80px top",
+          start: '80px top',
           onEnter: () => {
             navbar.classList.add('bg-carbon/80', 'backdrop-blur-md', 'border-wire');
             navbar.classList.remove('border-transparent');
@@ -75,9 +97,10 @@ const base = '/';
     }
 
     const menuBtn = document.getElementById('mobile-menu-btn');
+    const closeBtn = document.getElementById('mobile-nav-close-btn');
     const overlay = document.getElementById('mobile-nav-overlay');
 
-    if (!(menuBtn instanceof HTMLButtonElement) || !(overlay instanceof HTMLDivElement)) {
+    if (!(menuBtn instanceof HTMLButtonElement) || !(closeBtn instanceof HTMLButtonElement) || !(overlay instanceof HTMLDivElement)) {
       return;
     }
 
@@ -108,22 +131,32 @@ const base = '/';
       document.body.classList.remove('mobile-menu-open');
     };
 
+    const setMenuState = (open: boolean) => {
+      isOpen = open;
+      overlay.classList.toggle('opacity-100', open);
+      overlay.classList.toggle('pointer-events-auto', open);
+      overlay.classList.toggle('visible', open);
+      overlay.classList.toggle('opacity-0', !open);
+      overlay.classList.toggle('pointer-events-none', !open);
+      overlay.classList.toggle('invisible', !open);
+      overlay.setAttribute('aria-hidden', open ? 'false' : 'true');
+      menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+
+      if (open) {
+        lockScroll();
+      } else {
+        unlockScroll();
+      }
+    };
+
     const openMenu = () => {
       if (isOpen) return;
-      isOpen = true;
-      lockScroll();
-      overlay.classList.remove('opacity-0', 'pointer-events-none');
-      overlay.classList.add('opacity-100', 'pointer-events-auto');
-      menuBtn.setAttribute('aria-expanded', 'true');
+      setMenuState(true);
     };
 
     const closeMenu = () => {
       if (!isOpen) return;
-      isOpen = false;
-      overlay.classList.add('opacity-0', 'pointer-events-none');
-      overlay.classList.remove('opacity-100', 'pointer-events-auto');
-      menuBtn.setAttribute('aria-expanded', 'false');
-      unlockScroll();
+      setMenuState(false);
     };
 
     const onMenuToggle = () => {
@@ -146,14 +179,19 @@ const base = '/';
       }
     };
 
-    isOpen = false;
-    overlay.classList.add('opacity-0', 'pointer-events-none');
-    overlay.classList.remove('opacity-100', 'pointer-events-auto');
-    menuBtn.setAttribute('aria-expanded', 'false');
+    const onResize = () => {
+      if (window.innerWidth >= 768) {
+        closeMenu();
+      }
+    };
+
+    setMenuState(false);
 
     menuBtn.addEventListener('click', onMenuToggle);
+    closeBtn.addEventListener('click', closeMenu);
     overlay.addEventListener('click', onOverlayClick);
     document.addEventListener('keydown', onKeydown);
+    window.addEventListener('resize', onResize);
 
     const links = overlay.querySelectorAll('a');
     links.forEach((link) => {
@@ -165,8 +203,10 @@ const base = '/';
       () => {
         closeMenu();
         menuBtn.removeEventListener('click', onMenuToggle);
+        closeBtn.removeEventListener('click', closeMenu);
         overlay.removeEventListener('click', onOverlayClick);
         document.removeEventListener('keydown', onKeydown);
+        window.removeEventListener('resize', onResize);
         links.forEach((link) => {
           link.removeEventListener('click', closeMenu);
         });
@@ -177,5 +217,5 @@ const base = '/';
   }
 
   initNav();
-  document.addEventListener("astro:page-load", initNav);
+  document.addEventListener('astro:page-load', initNav);
 </script>
