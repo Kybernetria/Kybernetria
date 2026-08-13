@@ -5,9 +5,14 @@ set -e
 BRANCH="pages"
 DEPLOY_DIR=$(mktemp -d)
 
+TEMP_BRANCH=""
+
 cleanup() {
   cd "$(git rev-parse --show-toplevel)"
   git worktree remove --force "$DEPLOY_DIR" 2>/dev/null || true
+  if [ -n "$TEMP_BRANCH" ]; then
+    git branch -D "$TEMP_BRANCH" >/dev/null 2>&1 || true
+  fi
   rm -rf "$DEPLOY_DIR"
 }
 trap cleanup EXIT
@@ -19,19 +24,19 @@ git fetch origin --prune
 
 echo "🌿  Preparing '$BRANCH' branch..."
 
-# Check if the pages branch already exists locally or on the remote
-LOCAL_EXISTS=$(git show-ref --verify --quiet "refs/heads/$BRANCH" && echo yes || echo no)
+# Always deploy from the freshly fetched remote branch. A local pages branch may
+# be stale after the remote branch is rewritten, so it must not be used here.
 REMOTE_EXISTS=$(git show-ref --verify --quiet "refs/remotes/origin/$BRANCH" && echo yes || echo no)
 
-if [ "$LOCAL_EXISTS" = "yes" ]; then
-  git worktree add "$DEPLOY_DIR" "$BRANCH"
-elif [ "$REMOTE_EXISTS" = "yes" ]; then
-  git fetch origin "$BRANCH"
-  git worktree add "$DEPLOY_DIR" "origin/$BRANCH"
+if [ "$REMOTE_EXISTS" = "yes" ]; then
+  git worktree add --detach "$DEPLOY_DIR" "origin/$BRANCH"
 else
-  # First deploy — create a fresh orphan branch (requires Git >= 2.36)
+  # First deploy — create a temporary orphan branch (requires Git >= 2.36).
+  # The branch is removed by cleanup so pages is never retained locally.
   echo "  No '$BRANCH' branch found, creating orphan..."
-  git worktree add --orphan -b "$BRANCH" "$DEPLOY_DIR"
+  TEMP_BRANCH_CANDIDATE="deploy-$BRANCH-$$"
+  git worktree add --orphan -b "$TEMP_BRANCH_CANDIDATE" "$DEPLOY_DIR"
+  TEMP_BRANCH="$TEMP_BRANCH_CANDIDATE"
 fi
 
 echo "📦  Copying dist/ to deploy worktree..."
@@ -47,6 +52,8 @@ if git diff --cached --quiet; then
 else
   git commit -m "deploy: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
   echo "🚀  Pushing to origin/$BRANCH..."
-  git push origin "$BRANCH"
+  # Push the detached/temp commit without force so concurrent remote changes are
+  # rejected rather than overwritten.
+  git push origin "HEAD:$BRANCH"
   echo "✅  Deployed! Your site is live on the '$BRANCH' branch."
 fi

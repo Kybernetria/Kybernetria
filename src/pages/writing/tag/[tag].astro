@@ -6,7 +6,9 @@ import Footer from '../../../components/Footer.astro';
 import SectionDivider from '../../../components/SectionDivider.astro';
 
 export async function getStaticPaths() {
-  const posts = await getCollection('blog');
+  const posts = await getCollection('blog', ({ data }) => {
+    return import.meta.env.PROD ? data.draft !== true : true;
+  });
   const tags = new Set<string>();
   
   posts.forEach(post => {
