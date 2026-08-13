@@ -16,8 +16,8 @@ const wikiLinks = () => {
       
       for (const match of matches) {
         const fullMatch = match[0];
-        const slug = match[2] || match[1];
-        const displayText = match[2] ? match[1] : match[1];
+        const slug = match[1];
+        const displayText = match[2] || match[1];
         const matchIndex = match.index;
         
         if (matchIndex > lastIndex) {
@@ -29,7 +29,7 @@ const wikiLinks = () => {
         
         newNodes.push({
           type: 'link',
-          url: `/blog/${slug.toLowerCase().replace(/\s+/g, '-')}/`,
+          url: `/writing/${slug.toLowerCase().replace(/\s+/g, '-')}/`,
           children: [{ type: 'text', value: displayText }],
           data: {
             hProperties: {
