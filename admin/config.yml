@@ -1,0 +1,42 @@
+# Sveltia CMS configuration for GitHub
+# OAuth App Redirect URI: https://kybernetria.com/admin/
+
+backend:
+  name: github
+  repo: Kybernetria/Kybernetria
+  branch: main
+  base_url: https://github.com
+  api_root: https://api.github.com
+  # Add your GitHub OAuth app/client ID here if you want /admin to authenticate.
+
+media_folder: public/images/blog
+public_folder: /images/blog
+
+collections:
+  - name: blog
+    label: Blog Posts
+    folder: src/content/blog
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: Date, name: date, widget: datetime }
+      - { label: Tags, name: tags, widget: list, default: [] }
+      - { label: Excerpt, name: excerpt, widget: text }
+      - { label: Hero Image, name: heroImage, widget: image, required: false }
+      - { label: Draft, name: draft, widget: boolean, default: false }
+      - { label: Body, name: body, widget: markdown }
+
+  - name: tools
+    label: Tools
+    folder: src/content/tools
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: Name, name: name, widget: string }
+      - { label: Description, name: description, widget: text }
+      - { label: GitHub URL, name: github, widget: string }
+      - { label: Tags, name: tags, widget: list, default: [] }
+      - { label: Status, name: status, widget: select, options: ["active", "stable", "experimental"], default: "active" }
+      - { label: Order, name: order, widget: number, default: 0 }
+      - { label: Body, name: body, widget: markdown, required: false }
