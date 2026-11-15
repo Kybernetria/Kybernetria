@@ -43,6 +43,7 @@ const { code, title, colour = 'signal' } = Astro.props;
   gsap.registerPlugin(ScrollTrigger);
 
   function initDividers() {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const dividers = document.querySelectorAll('.section-divider');
 
     dividers.forEach(divider => {

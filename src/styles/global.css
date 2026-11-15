@@ -137,7 +137,7 @@
     --color-forge: #1a1a1a;
     --color-plate: #242424;
     --color-chalk: #e8e4dc;
-    --color-ash: #8a8880;
+    --color-ash: #a5a299;
     --color-signal: #d93f2e;
     --color-copper: #c47a3a;
     --color-cyan: #7ec8c8;
@@ -154,6 +154,7 @@
     color: var(--color-chalk);
     scroll-behavior: smooth;
     height: 100%;
+    scroll-padding-top: 6rem;
   }
 
   @media (min-width: 1024px) {
@@ -190,6 +191,15 @@
     font-family: var(--font-mono);
   }
 
+  :focus-visible {
+    outline: 2px solid var(--color-cyan);
+    outline-offset: 5px;
+  }
+
+  [hidden] {
+    display: none !important;
+  }
+
   body::after {
     content: "";
     position: fixed;
@@ -209,6 +219,29 @@
   h6 {
     overflow-wrap: break-word;
     min-width: 0;
+  }
+}
+
+.skip-link {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 10000;
+  padding: 0.75rem 1rem;
+  background: var(--color-chalk);
+  color: var(--color-carbon);
+  font-family: var(--font-mono);
+  transform: translateY(-200%);
+}
+
+.skip-link:focus { transform: translateY(0); }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
 

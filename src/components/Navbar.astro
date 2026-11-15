@@ -1,221 +1,84 @@
 ---
-import { Menu } from 'lucide-astro';
+import { Menu, X, ArrowUpRight } from 'lucide-astro';
 
-interface Props {
-  transparent?: boolean;
-}
-
-const { transparent = false } = Astro.props;
-const base = '/';
+interface Props { transparent?: boolean; }
+const links = [
+  { href: '/writing/', label: 'Writing' },
+  { href: '/tools/', label: 'Projects' },
+  { href: '/about/', label: 'About' },
+];
+const isActive = (href: string) => Astro.url.pathname.startsWith(href);
 ---
 
-<nav id="navbar" class={`fixed top-0 left-0 w-full z-50 border-b transition-all duration-300 px-6 py-4 flex items-center justify-between ${transparent ? 'border-transparent' : 'border-transparent'}`} data-transparent={transparent}>
-  <!-- Left: Logo -->
-  <div class="flex-shrink-0">
-    <a href={base} class="font-headline text-[1.1rem] tracking-widest text-chalk hover:text-signal transition-colors duration-150 relative z-20">
-      KYBERNETRIA
-    </a>
+<nav id="navbar" aria-label="Main navigation" class="fixed top-0 left-0 w-full z-50 border-b border-wire/70 bg-carbon/90 backdrop-blur-md px-6 md:px-12 py-4 flex items-center justify-between gap-6">
+  <a href="/" aria-label="Kybernetria home" class="flex items-center gap-3 font-headline text-xl tracking-widest text-chalk hover:text-cyan transition-colors">
+    <span class="w-2 h-2 bg-signal rotate-45" aria-hidden="true"></span>
+    KYBERNETRIA
+  </a>
+  <div class="hidden md:flex gap-8 lg:gap-12 items-center">
+    {links.map(({ href, label }) => (
+      <a href={href} aria-current={isActive(href) ? 'page' : undefined} class="nav-link font-mono text-xs uppercase tracking-widest text-ash hover:text-chalk transition-colors py-2">{label}</a>
+    ))}
+    <a href="https://github.com/kybernetria" target="_blank" rel="noopener noreferrer" class="flex items-center gap-1.5 border-l border-wire pl-6 font-mono text-xs text-ash hover:text-cyan transition-colors" aria-label="GitHub (opens in a new tab)">GitHub <ArrowUpRight size={14} /></a>
   </div>
-
-  <!-- Center: Nav links (Desktop) -->
-  <div class="hidden md:flex gap-12 items-center absolute left-1/2 -translate-x-1/2">
-    <a href={`${base}writing/`} class="nav-link font-subhead uppercase text-chalk text-lg tracking-wide relative overflow-hidden group">
-      Writing
-      <span class="absolute bottom-0 left-0 w-full h-[2px] bg-signal -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-300 ease-[cubic-bezier(0.25,0.46,0.45,0.94)]"></span>
-    </a>
-    <a href={`${base}about/`} class="nav-link font-subhead uppercase text-chalk text-lg tracking-wide relative overflow-hidden group">
-      About
-      <span class="absolute bottom-0 left-0 w-full h-[2px] bg-signal -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-300 ease-[cubic-bezier(0.25,0.46,0.45,0.94)]"></span>
-    </a>
-    <a href={`${base}tools/`} class="nav-link font-subhead uppercase text-chalk text-lg tracking-wide relative overflow-hidden group">
-      Projects
-      <span class="absolute bottom-0 left-0 w-full h-[2px] bg-signal -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-300 ease-[cubic-bezier(0.25,0.46,0.45,0.94)]"></span>
-    </a>
-  </div>
-
-  <!-- Mobile Menu Button -->
-  <button
-    id="mobile-menu-btn"
-    type="button"
-    class="md:hidden text-chalk hover:text-signal transition-colors relative z-50 pointer-events-auto"
-    aria-label="Toggle Menu"
-    aria-controls="mobile-nav-overlay"
-    aria-expanded="false"
-  >
-    <Menu size={28} />
+  <button id="mobile-menu-btn" type="button" class="md:hidden p-2 text-chalk hover:text-cyan" aria-label="Open navigation menu" aria-controls="mobile-nav-overlay" aria-expanded="false">
+    <Menu size={24} />
   </button>
 </nav>
 
-<!-- Mobile Overlay -->
-<div
-  id="mobile-nav-overlay"
-  class="fixed inset-0 z-[60] bg-carbon/95 backdrop-blur-lg flex md:hidden flex-col items-center justify-center gap-8 opacity-0 invisible pointer-events-none transition-opacity duration-300"
-  aria-hidden="true"
-  style="min-height: 100vh; min-height: 100svh; min-height: 100dvh; padding: calc(env(safe-area-inset-top, 0px) + 1.5rem) calc(env(safe-area-inset-right, 0px) + 1.5rem) calc(env(safe-area-inset-bottom, 0px) + 1.5rem) calc(env(safe-area-inset-left, 0px) + 1.5rem); overflow-y: auto;"
->
-  <button
-    id="mobile-nav-close-btn"
-    type="button"
-    class="absolute top-6 right-6 text-chalk hover:text-signal transition-colors"
-    aria-label="Close Menu"
-    style="top: calc(env(safe-area-inset-top, 0px) + 1rem); right: calc(env(safe-area-inset-right, 0px) + 1rem);"
-  >
-    <span class="font-subhead uppercase tracking-wide text-lg">Close</span>
-  </button>
+<dialog id="mobile-nav-overlay" aria-label="Navigation menu" class="mobile-nav bg-carbon text-chalk">
+  <div class="flex items-center justify-between border-b border-wire pb-5">
+    <span class="font-mono text-xs uppercase tracking-widest text-ash">Explore Kybernetria</span>
+    <button id="mobile-nav-close-btn" type="button" class="p-3 hover:text-cyan" aria-label="Close navigation menu" autofocus><X size={24} /></button>
+  </div>
+  <div class="flex flex-col gap-7 py-12">
+    {links.map(({ href, label }, i) => (
+      <a href={href} aria-current={isActive(href) ? 'page' : undefined} class="mobile-link flex items-baseline gap-5 font-headline text-5xl hover:text-cyan transition-colors">
+        <span class="font-mono text-xs text-ash" aria-hidden="true">0{i + 1}</span>{label}
+      </a>
+    ))}
+  </div>
+  <a href="/" class="inline-block border-t border-wire pt-6 font-mono text-sm text-ash hover:text-chalk">← Back to home</a>
+</dialog>
 
-  <a href={`${base}writing/`} class="font-headline text-5xl text-chalk hover:text-signal transition-colors">Writing</a>
-  <a href={`${base}about/`} class="font-headline text-5xl text-chalk hover:text-signal transition-colors">About</a>
-  <a href={`${base}tools/`} class="font-headline text-5xl text-chalk hover:text-signal transition-colors">Projects</a>
-</div>
+<style>
+  .nav-link[aria-current='page'] { color: var(--color-chalk); box-shadow: 0 2px var(--color-signal); }
+  .mobile-link[aria-current='page'] { color: var(--color-cyan); }
+  .mobile-nav {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    max-width: none;
+    height: 100dvh;
+    max-height: none;
+    margin: 0;
+    border: 0;
+    padding: max(1.5rem, env(safe-area-inset-top)) 1.5rem max(1.5rem, env(safe-area-inset-bottom));
+    overflow-y: auto;
+  }
+  .mobile-nav::backdrop { background: var(--color-carbon); }
+</style>
 
 <script>
-  import gsap from 'gsap';
-  import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
-  gsap.registerPlugin(ScrollTrigger);
-
-  function initNav() {
-    const navbar = document.getElementById('navbar');
-
-    if (navbar && !navbar.dataset.scrollTriggerInit) {
-      const isTransparent = navbar.dataset.transparent === 'true';
-
-      if (!isTransparent) {
-        ScrollTrigger.create({
-          start: '80px top',
-          onEnter: () => {
-            navbar.classList.add('bg-carbon/80', 'backdrop-blur-md', 'border-wire');
-            navbar.classList.remove('border-transparent');
-          },
-          onLeaveBack: () => {
-            navbar.classList.remove('bg-carbon/80', 'backdrop-blur-md', 'border-wire');
-            navbar.classList.add('border-transparent');
-          }
-        });
-      }
-      navbar.dataset.scrollTriggerInit = 'true';
-    }
-
-    const menuBtn = document.getElementById('mobile-menu-btn');
-    const closeBtn = document.getElementById('mobile-nav-close-btn');
-    const overlay = document.getElementById('mobile-nav-overlay');
-
-    if (!(menuBtn instanceof HTMLButtonElement) || !(closeBtn instanceof HTMLButtonElement) || !(overlay instanceof HTMLDivElement)) {
-      return;
-    }
-
-    if (menuBtn.dataset.navInit === 'true') {
-      return;
-    }
-    menuBtn.dataset.navInit = 'true';
-
-    let isOpen = false;
-
-    const lockScroll = () => {
+  const menuBtn = document.getElementById('mobile-menu-btn');
+  const closeBtn = document.getElementById('mobile-nav-close-btn');
+  const dialog = document.getElementById('mobile-nav-overlay');
+  if (dialog instanceof HTMLDialogElement && menuBtn && closeBtn) {
+    const closeMenu = () => dialog.close();
+    menuBtn.addEventListener('click', () => {
+      dialog.showModal();
+      menuBtn.setAttribute('aria-expanded', 'true');
       document.documentElement.style.overflow = 'hidden';
-      document.body.style.overflow = 'hidden';
-      document.documentElement.style.overscrollBehavior = 'none';
-      document.body.style.overscrollBehavior = 'none';
-      document.documentElement.style.touchAction = 'none';
-      document.body.style.touchAction = 'none';
-      document.body.classList.add('mobile-menu-open');
-    };
-
-    const unlockScroll = () => {
-      document.documentElement.style.overflow = '';
-      document.body.style.overflow = '';
-      document.documentElement.style.overscrollBehavior = '';
-      document.body.style.overscrollBehavior = '';
-      document.documentElement.style.touchAction = '';
-      document.body.style.touchAction = '';
-      document.body.classList.remove('mobile-menu-open');
-    };
-
-    const setMenuState = (open: boolean) => {
-      isOpen = open;
-      overlay.classList.toggle('opacity-100', open);
-      overlay.classList.toggle('pointer-events-auto', open);
-      overlay.classList.toggle('visible', open);
-      overlay.classList.toggle('opacity-0', !open);
-      overlay.classList.toggle('pointer-events-none', !open);
-      overlay.classList.toggle('invisible', !open);
-      overlay.setAttribute('aria-hidden', open ? 'false' : 'true');
-      menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
-
-      if (open) {
-        lockScroll();
-      } else {
-        unlockScroll();
-      }
-    };
-
-    const openMenu = () => {
-      if (isOpen) return;
-      setMenuState(true);
-    };
-
-    const closeMenu = () => {
-      if (!isOpen) return;
-      setMenuState(false);
-    };
-
-    const onMenuToggle = () => {
-      if (isOpen) {
-        closeMenu();
-      } else {
-        openMenu();
-      }
-    };
-
-    const onOverlayClick = (event: MouseEvent) => {
-      if (event.target === overlay) {
-        closeMenu();
-      }
-    };
-
-    const onKeydown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        closeMenu();
-      }
-    };
-
-    const onResize = () => {
-      if (window.innerWidth >= 768) {
-        closeMenu();
-      }
-    };
-
-    setMenuState(false);
-
-    menuBtn.addEventListener('click', onMenuToggle);
-    closeBtn.addEventListener('click', closeMenu);
-    overlay.addEventListener('click', onOverlayClick);
-    document.addEventListener('keydown', onKeydown);
-    window.addEventListener('resize', onResize);
-
-    const links = overlay.querySelectorAll('a');
-    links.forEach((link) => {
-      link.addEventListener('click', closeMenu);
     });
-
-    document.addEventListener(
-      'astro:before-swap',
-      () => {
-        closeMenu();
-        menuBtn.removeEventListener('click', onMenuToggle);
-        closeBtn.removeEventListener('click', closeMenu);
-        overlay.removeEventListener('click', onOverlayClick);
-        document.removeEventListener('keydown', onKeydown);
-        window.removeEventListener('resize', onResize);
-        links.forEach((link) => {
-          link.removeEventListener('click', closeMenu);
-        });
-        delete menuBtn.dataset.navInit;
-      },
-      { once: true }
-    );
+    closeBtn.addEventListener('click', closeMenu);
+    dialog.addEventListener('close', () => {
+      menuBtn.setAttribute('aria-expanded', 'false');
+      document.documentElement.style.overflow = '';
+      if (window.innerWidth < 768) menuBtn.focus();
+    });
+    dialog.querySelectorAll('a').forEach(link => link.addEventListener('click', closeMenu));
+    window.matchMedia('(min-width: 768px)').addEventListener('change', event => {
+      if (event.matches && dialog.open) closeMenu();
+    });
   }
-
-  initNav();
-  document.addEventListener('astro:page-load', initNav);
 </script>

@@ -7,44 +7,47 @@ import { ArrowLeft } from 'lucide-astro';
 interface Props {
   frontmatter: {
     title: string;
-    date: Date;
-    tags: string[];
-    excerpt: string;
+    date?: Date | string;
+    tags?: string[];
+    excerpt?: string;
+    pageType?: 'about';
     heroImage?: string;
     draft?: boolean;
   };
 }
 
 const { frontmatter } = Astro.props;
+const isAbout = frontmatter.pageType === 'about';
 const base = '/';
 ---
 
-<BaseLayout title={`${frontmatter.title} | Kybernetria`}>
+<BaseLayout title={`${frontmatter.title} | Kybernetria`} description={frontmatter.excerpt}>
   <Navbar />
 
-  <main class="w-full pt-32 pb-24 px-6 md:px-12 relative z-10">
-    <article class="max-w-[68ch] mx-auto w-full">
+  <main id="main-content" tabindex="-1" class="w-full pt-32 pb-24 px-6 md:px-12 relative z-10">
+    <article class="max-w-[68ch] mx-auto w-full relative">
       <!-- Back Link Top -->
-      <a href={`${base}writing/`} class="inline-flex items-center gap-2 font-mono text-ash text-sm mb-12 hover:text-signal transition-colors">
-        <ArrowLeft size={16} /> Back to Transmissions
-      </a>
+      {!isAbout && <a href={`${base}writing/`} class="inline-flex items-center gap-2 font-mono text-ash text-sm mb-12 hover:text-signal transition-colors">
+        <ArrowLeft size={16} /> Back to Writing
+      </a>}
 
       <!-- Header -->
-      <header class="mb-16">
-        <div class="flex flex-wrap items-center gap-3 mb-6">
-          <time class="font-mono text-ash text-sm">{new Date(frontmatter.date).toISOString().split('T')[0]}</time>
-          <span class="text-wire hidden md:inline">•</span>
-          <div class="flex gap-2">
+      <header class:list={["mb-16", { 'about-header': isAbout }]}>
+        {(frontmatter.date || frontmatter.tags?.length) && <div class="flex flex-wrap items-center gap-3 mb-6">
+          {frontmatter.date && <time class="font-mono text-ash text-sm" datetime={new Date(frontmatter.date).toISOString()}>{new Date(frontmatter.date).toISOString().split('T')[0]}</time>}
+          {frontmatter.date && frontmatter.tags?.length && <span class="text-wire hidden md:inline">•</span>}
+          <div class="flex flex-wrap gap-2">
             {frontmatter.tags && frontmatter.tags.map((tag: string) => (
               <a href={`/writing/tag/${tag.toLowerCase()}/`} class="font-mono text-[0.7rem] uppercase px-2 py-0.5 border border-wire rounded-full text-ash hover:text-signal hover:border-signal transition-colors">
                 {tag}
               </a>
             ))}
           </div>
-        </div>
+        </div>}
         <h1 class="font-headline text-5xl md:text-7xl leading-[0.95] text-chalk drop-shadow-sm mb-8" style="font-size: clamp(3rem, 8vw, 6rem);">
           {frontmatter.title}
         </h1>
+        {isAbout && frontmatter.excerpt && <p class="font-body italic text-ash text-lg md:text-xl leading-relaxed max-w-[48ch]">{frontmatter.excerpt}</p>}
         {frontmatter.heroImage && (
           <div class="w-full aspect-video rounded-xl overflow-hidden mb-8 border border-wire">
             <img src={frontmatter.heroImage} alt="Hero" class="w-full h-full object-cover grayscale mix-blend-luminosity opacity-90" />
@@ -58,11 +61,11 @@ const base = '/';
       </div>
 
       <!-- Back Link Bottom -->
-      <div class="mt-20 pt-8 border-t border-wire flex justify-between items-center">
+      {!isAbout && <div class="mt-20 pt-8 border-t border-wire flex justify-between items-center">
         <a href={`${base}writing/`} class="inline-flex items-center gap-2 font-mono text-ash text-sm hover:text-signal transition-colors group">
           <span class="transform group-hover:-translate-x-1 transition-transform">←</span> Return to Writing
         </a>
-      </div>
+      </div>}
     </article>
   </main>
 
@@ -70,6 +73,11 @@ const base = '/';
 </BaseLayout>
 
 <style is:global>
+  .about-header {
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--color-wire);
+  }
+
   /* Editorial Prose Scoped Styling */
   .editorial-prose p {
     margin-bottom: 2rem;

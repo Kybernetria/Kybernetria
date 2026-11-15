@@ -8,7 +8,7 @@ export default {
         forge: "rgb(26 26 26 / <alpha-value>)",
         plate: "rgb(36 36 36 / <alpha-value>)",
         chalk: "rgb(232 228 220 / <alpha-value>)",
-        ash: "rgb(138 136 128 / <alpha-value>)",
+        ash: "rgb(165 162 153 / <alpha-value>)",
         signal: "rgb(217 63 46 / <alpha-value>)",
         copper: "rgb(196 122 58 / <alpha-value>)",
         cyan: "rgb(126 200 200 / <alpha-value>)",

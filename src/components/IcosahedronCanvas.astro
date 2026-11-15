@@ -98,6 +98,7 @@
       const mobileView = width < 768;
       camera.position.x = mobileView ? 0 : -3;
       camera.position.y = mobileView ? -1.5 : 0;
+      renderer.render(scene, camera);
     };
 
     const onMouseMove = (event) => {
@@ -121,10 +122,14 @@
 
     syncSceneSize();
 
-    const clock = new THREE.Clock();
+    const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let previousTime = performance.now();
     const animate = () => {
+      if (motionPreference.matches) return;
       animationId = requestAnimationFrame(animate);
-      const delta = clock.getDelta();
+      const now = performance.now();
+      const delta = Math.min((now - previousTime) / 1000, 0.1);
+      previousTime = now;
 
       icosahedron.rotation.x += 0.03 * delta;
       icosahedron.rotation.y += 0.05 * delta;
@@ -139,6 +144,13 @@
       renderer.render(scene, camera);
     };
     animate();
+
+    const onMotionChange = () => {
+      cancelAnimationFrame(animationId);
+      previousTime = performance.now();
+      animate();
+    };
+    motionPreference.addEventListener('change', onMotionChange);
 
     const scrollCtx = gsap.context(() => {
       gsap.to(container, {
@@ -159,6 +171,7 @@
       if (activeCanvas !== canvas) return;
 
       cancelAnimationFrame(animationId);
+      motionPreference.removeEventListener('change', onMotionChange);
       resizeObserver.disconnect();
       window.removeEventListener('resize', onResize);
       document.removeEventListener('mousemove', onMouseMove);

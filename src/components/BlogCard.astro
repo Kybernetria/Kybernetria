@@ -1,0 +1,62 @@
+---
+import type { CollectionEntry } from 'astro:content';
+interface Props { post: CollectionEntry<'blog'>; }
+const { post } = Astro.props;
+const href = `/writing/${post.id.replace(/\.md$/, '')}/`;
+const minutes = Math.max(1, Math.ceil((post.body ?? '').split(/\s+/).filter(Boolean).length / 200));
+---
+
+<article class="journal-card group" data-search={JSON.stringify([post.data.title, post.data.excerpt, ...post.data.tags, post.data.date.toISOString().split('T')[0]]).toLowerCase()}>
+  {post.data.heroImage ? (
+    <a href={href} class="journal-image" tabindex="-1" aria-hidden="true">
+      <img src={post.data.heroImage} alt="" loading="lazy" width="800" height="450" />
+    </a>
+  ) : (
+    <div class="journal-cover" aria-hidden="true">
+      <svg viewBox="0 0 320 160" fill="none"><path d="M50 120 120 30 230 45 275 115 155 145 50 120 230 45 155 145 120 30 275 115 50 120Z" stroke="currentColor"/><circle cx="120" cy="30" r="3" fill="currentColor"/><circle cx="155" cy="145" r="3" fill="currentColor"/></svg>
+      <span class="font-mono text-[0.65rem] uppercase tracking-[0.2em]">{post.data.tags[0] ?? 'Writing'}</span>
+    </div>
+  )}
+  <div class="journal-content">
+    <div class="flex flex-wrap justify-between gap-2 font-mono text-[0.65rem] text-ash mb-6 tracking-wide">
+      <time datetime={post.data.date.toISOString()}>{post.data.date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' })}</time>
+      <span>{minutes} min read</span>
+    </div>
+    <h3 class="font-subhead text-xl leading-snug tracking-tight mb-4">
+      <a href={href} class="hover:text-cyan transition-colors">{post.data.title}</a>
+    </h3>
+    <p class="font-body text-sm text-ash leading-relaxed mb-6">{post.data.excerpt}</p>
+    <div class="flex flex-wrap gap-2 mt-auto mb-6">
+      {post.data.tags.map(tag => (
+        <a href={`/writing/tag/${tag.toLowerCase()}/`} class="journal-tag font-mono text-[0.65rem] uppercase tracking-wide">{tag}</a>
+      ))}
+    </div>
+    <a href={href} class="journal-read font-mono text-xs uppercase tracking-widest text-chalk flex justify-between items-center border-t border-wire pt-5" aria-label={`Read ${post.data.title}`}>
+      Read article <span class="text-cyan transition-transform group-hover:translate-x-1" aria-hidden="true">↗</span>
+    </a>
+  </div>
+</article>
+
+<style>
+  .journal-card {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--color-wire);
+    border-radius: 0.35rem;
+    background: linear-gradient(145deg, #20201e, var(--color-forge));
+    transition: border-color 200ms, transform 200ms;
+  }
+  .journal-card:hover, .journal-card:focus-within { border-color: #67645d; transform: translateY(-3px); }
+  .journal-image { display: block; height: 10rem; overflow: hidden; border-bottom: 1px solid var(--color-wire); }
+  .journal-cover { position: relative; height: 10rem; overflow: hidden; border-bottom: 1px solid var(--color-wire); background: radial-gradient(ellipse at 80% 50%, #7ec8c80c, transparent 70%), #141615; color: #7ec8c84d; }
+  .journal-cover svg { position: absolute; right: -1rem; top: -1rem; height: 12rem; width: 22rem; }
+  .journal-cover span { position: absolute; bottom: 1.25rem; left: 1.5rem; color: var(--color-ash); }
+  .journal-image img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1); opacity: 0.7; transition: filter 300ms, opacity 300ms; }
+  .journal-card:hover img { filter: grayscale(0); opacity: 1; }
+  .journal-content { padding: 1.5rem; display: flex; flex: 1; flex-direction: column; }
+  .journal-tag { padding: 0.35rem 0.5rem; color: var(--color-ash); border: 1px solid var(--color-wire); border-radius: 2px; transition: color 200ms, border-color 200ms; }
+  .journal-tag:hover { color: var(--color-cyan); border-color: var(--color-cyan); }
+  .journal-read:hover { color: var(--color-cyan); }
+</style>

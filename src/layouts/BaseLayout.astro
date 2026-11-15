@@ -3,20 +3,24 @@ import '../styles/global.css';
 
 interface Props {
   title?: string;
+  description?: string;
 }
 
-const { title = "Kybernetria" } = Astro.props;
+const { title = "Kybernetria", description = "Cybernetics, collective intelligence, and the architectures of liberation." } = Astro.props;
 ---
 
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, viewport-fit=cover" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#0f0f0f" />
     <title>{title}</title>
     <link rel="icon" type="image/png" href="/favicon.png" />
   </head>
   <body class="bg-carbon text-chalk antialiased selection:bg-signal selection:text-carbon w-full relative">
+    <a href="#main-content" class="skip-link">Skip to content</a>
     <slot />
   </body>
 </html>
